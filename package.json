@@ -4,11 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run clean && npm run build && npm run exec",
+    "build": "tsc",
+    "exec": "node ./dist/index.js",
+    "clean": "rm -rf ./dist"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "typescipt": "^1.0.0"
+    "typescript": "^4.2.3"
   }
 }
