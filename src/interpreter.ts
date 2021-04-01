@@ -12,19 +12,32 @@ export default class Interpreter {
     }
 
     getNextToken(): Token {
+        this.skipWhitespaces();
+
         if (this.pos > this.text.length - 1)
             return new Token(TokenType.EOF, null);
 
         const currentChar: string = this.text[this.pos];
 
         if (isNumber(currentChar)) {
-            const token = new Token(TokenType.NUMBER, Number(currentChar));
+            let end = this.pos + 1;
+
+            while (isNumber(this.text.slice(this.pos, end)) && end < this.text.length + 1)
+                end++;
+
+            const token = new Token(TokenType.NUMBER, Number(this.text.slice(this.pos, --end)));
+            this.pos = end;
+            return token;
+        }
+
+        if (currentChar === '+') {
+            const token = new Token(TokenType.PLUS, currentChar);
             this.pos++;
             return token;
         }
 
-        if (currentChar === TokenType.PLUS) {
-            const token = new Token(TokenType.PLUS, currentChar);
+        if (currentChar === '-') {
+            const token = new Token(TokenType.MINUS, currentChar);
             this.pos++;
             return token;
         }
@@ -32,9 +45,14 @@ export default class Interpreter {
         throw new Error('Error parsing input');
     }
 
-    eat(tokenType: TokenType): void {debugger;
-        if (this.currentToken.getType() !== tokenType)
-            throw new Error('Error paring input');
+    skipWhitespaces(): void {
+        while (this.text[this.pos] === " " && this.pos < this.text.length - 1)
+            this.pos++;
+    }
+
+    eat(tokenType: TokenType): void {
+        if (!(this.currentToken.getType() & tokenType))
+            throw new Error('Error parsing input');
 
         this.currentToken = this.getNextToken();
     }
@@ -46,7 +64,7 @@ export default class Interpreter {
         this.eat(TokenType.NUMBER);
 
         const op: Token = this.currentToken;
-        this.eat(TokenType.PLUS);
+        this.eat(TokenType.PLUS | TokenType.MINUS);
 
         const right: Token = this.currentToken;
         this.eat(TokenType.NUMBER);
@@ -56,6 +74,9 @@ export default class Interpreter {
         switch (op.getType()) {
             case TokenType.PLUS:
                 result = (left.getValue() as number) + (right.getValue() as number);
+                break;
+            case TokenType.MINUS:
+                result = (left.getValue() as number) - (right.getValue() as number);
                 break;
         }
         return result;

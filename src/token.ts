@@ -1,8 +1,9 @@
 export enum TokenType {
-    NONE = 'NONE',
-    EOF = 'EOF',
-    NUMBER = 'NUMBER',
-    PLUS = '+',
+    NONE    = 0x00000000,
+    EOF     = 0x00000001,
+    NUMBER  = 0x00000010,
+    PLUS    = 0x00000100,
+    MINUS   = 0x00001000,
 }
 
 export type TokenValue = string | number | null;
