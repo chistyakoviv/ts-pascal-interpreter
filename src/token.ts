@@ -7,6 +7,8 @@ export enum TokenType {
     NUMBER  = bit(2),
     PLUS    = bit(3),
     MINUS   = bit(4),
+    MULT    = bit(5),
+    DIV     = bit(6),
 }
 
 export default class Token {

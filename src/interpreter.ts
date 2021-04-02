@@ -67,6 +67,16 @@ export default class Interpreter {
                 return new Token(TokenType.MINUS, '-');
             }
 
+            if (this.currentChar === '*') {
+                this.advance();
+                return new Token(TokenType.MULT, '*');
+            }
+
+            if (this.currentChar === '/') {
+                this.advance();
+                return new Token(TokenType.DIV, '/');
+            }
+
             throw new ParseError();
         }
 
@@ -87,7 +97,7 @@ export default class Interpreter {
         this.eat(TokenType.NUMBER);
 
         const op: Token = this.currentToken;
-        this.eat(TokenType.PLUS | TokenType.MINUS);
+        this.eat(TokenType.PLUS | TokenType.MINUS | TokenType.MULT | TokenType.DIV);
 
         const right: Token = this.currentToken;
         this.eat(TokenType.NUMBER);
@@ -100,6 +110,12 @@ export default class Interpreter {
                 break;
             case TokenType.MINUS:
                 result = (left.getValue() as number) - (right.getValue() as number);
+                break;
+            case TokenType.MULT:
+                result = (left.getValue() as number) * (right.getValue() as number);
+                break;
+            case TokenType.DIV:
+                result = (left.getValue() as number) / (right.getValue() as number);
                 break;
         }
         return result;
