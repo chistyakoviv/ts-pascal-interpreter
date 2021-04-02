@@ -1,12 +1,13 @@
-export enum TokenType {
-    NONE    = 0x00000000,
-    EOF     = 0x00000001,
-    NUMBER  = 0x00000010,
-    PLUS    = 0x00000100,
-    MINUS   = 0x00001000,
-}
+import { bit } from './utils.js';
+import { TokenValue } from './types.js';
 
-export type TokenValue = string | number | null;
+export enum TokenType {
+    NONE    = bit(0),
+    EOF     = bit(1),
+    NUMBER  = bit(2),
+    PLUS    = bit(3),
+    MINUS   = bit(4),
+}
 
 export default class Token {
     private type: TokenType;

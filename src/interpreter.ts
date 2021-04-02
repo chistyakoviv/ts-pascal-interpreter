@@ -1,58 +1,81 @@
 import Token, { TokenType } from './token.js';
-import { isNumber } from './utils.js';
+import { isNumber, isSpace, isDot } from './utils.js';
+import { CharType } from './types.js';
+import ParseError from './errors/parse_error.js';
 
 export default class Interpreter {
     private text: string;
     private pos: number;
-    private currentToken: Token = new Token(TokenType.NONE, "");
+    private currentToken: Token = new Token(TokenType.NONE, null);
+    private currentChar: CharType;
 
     constructor(text: string) {
         this.text = text;
         this.pos = 0;
+        this.currentChar = this.text[this.pos];
+    }
+
+    advance(): void {
+        this.pos++;
+
+        if (this.pos > this.text.length - 1)
+            this.currentChar = null;
+        else
+            this.currentChar = this.text[this.pos];
+    }
+
+    skipWhitespace(): void {
+        while (this.currentChar !== null && isSpace(this.currentChar))
+            this.advance();
+    }
+
+    integer(): number {
+        const result = [];
+
+        while (this.currentChar !== null && (isNumber(this.currentChar) || isDot(this.currentChar))) {
+            result.push(this.currentChar);
+            this.advance();
+        }
+
+        const num = result.join('');
+
+        if (!isNumber(num))
+            throw new ParseError();
+
+        return Number(num);
     }
 
     getNextToken(): Token {
-        this.skipWhitespaces();
+        this.skipWhitespace();
 
-        if (this.pos > this.text.length - 1)
-            return new Token(TokenType.EOF, null);
+        while (this.currentChar !== null) {
+            if (isSpace(this.currentChar)) {
+                this.skipWhitespace();
+                continue;
+            }
 
-        const currentChar: string = this.text[this.pos];
+            if (isNumber(this.currentChar) || isDot(this.currentChar))
+                return new Token(TokenType.NUMBER, this.integer());
 
-        if (isNumber(currentChar)) {
-            let end = this.pos + 1;
+            if (this.currentChar === '+') {
+                this.advance();
+                return new Token(TokenType.PLUS, '+');
+            }
 
-            while (isNumber(this.text.slice(this.pos, end)) && end < this.text.length + 1)
-                end++;
+            if (this.currentChar === '-') {
+                this.advance();
+                return new Token(TokenType.MINUS, '-');
+            }
 
-            const token = new Token(TokenType.NUMBER, Number(this.text.slice(this.pos, --end)));
-            this.pos = end;
-            return token;
+            throw new ParseError();
         }
 
-        if (currentChar === '+') {
-            const token = new Token(TokenType.PLUS, currentChar);
-            this.pos++;
-            return token;
-        }
-
-        if (currentChar === '-') {
-            const token = new Token(TokenType.MINUS, currentChar);
-            this.pos++;
-            return token;
-        }
-
-        throw new Error('Error parsing input');
-    }
-
-    skipWhitespaces(): void {
-        while (this.text[this.pos] === " " && this.pos < this.text.length - 1)
-            this.pos++;
+        return new Token(TokenType.EOF, null);
     }
 
     eat(tokenType: TokenType): void {
         if (!(this.currentToken.getType() & tokenType))
-            throw new Error('Error parsing input');
+            throw new ParseError();
 
         this.currentToken = this.getNextToken();
     }
@@ -69,7 +92,7 @@ export default class Interpreter {
         const right: Token = this.currentToken;
         this.eat(TokenType.NUMBER);
 
-        let result: any;
+        let result: number = 0;
 
         switch (op.getType()) {
             case TokenType.PLUS:
