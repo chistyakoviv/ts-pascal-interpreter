@@ -1,5 +1,6 @@
 import Interpreter from './interpreter.js';
 import readline from 'readline';
+import Lexer from './lexer.js';
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -7,8 +8,8 @@ const rl = readline.createInterface({
 });
 
 rl.question('>>> ', (text: string) => {
-    const interpreter = new Interpreter(text);
-    const result: number = interpreter.expr();
+    const interpreter = new Interpreter(new Lexer(text));
+    const result: any = interpreter.expr();
 
     console.log(result);
 
