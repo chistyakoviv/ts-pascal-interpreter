@@ -1,0 +1,2 @@
+expr: factor ((PLUS | MINUS | MULT | DIV) factor)*
+factor: INTEGER
