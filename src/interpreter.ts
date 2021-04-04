@@ -1,21 +1,10 @@
-import AST from './ast/ast';
 import BinOp from './ast/binop';
 import Num from './ast/num';
 import ParseError from './errors/parse_error';
+import NodeVisitor from './node_visitor';
 import Parser from './parser';
 import { TokenType } from './token';
 import { TokenValue } from './types';
-
-abstract class NodeVisitor {
-    visit(node: AST): number {
-        const method = `visit${node.getName()}`;
-
-        if (!(this as any)[method])
-            throw new Error(`No ${method} method`);
-
-        return (this as any)[method](node);
-    }
-}
 
 export default class Interpreter extends NodeVisitor {
     private parser: Parser;
