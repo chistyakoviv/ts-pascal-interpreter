@@ -25,19 +25,11 @@ export default class Interpreter {
         return token.getValue();
     }
 
-    expr(): TokenValue {
+    term(): TokenValue {
         let result: TokenValue = this.factor();
 
-        while (this.currentToken.getType() & (TokenType.PLUS | TokenType.MINUS | TokenType.MULT | TokenType.DIV)) {
+        while (this.currentToken.getType() & (TokenType.MULT | TokenType.DIV)) {
             switch (this.currentToken.getType()) {
-                case TokenType.PLUS:
-                    this.eat(TokenType.PLUS);
-                    result = (result as number) + (this.factor() as number);
-                    break;
-                case TokenType.MINUS:
-                    this.eat(TokenType.MINUS);
-                    result = (result as number) - (this.factor() as number);
-                    break;
                 case TokenType.MULT:
                     this.eat(TokenType.MULT);
                     result = (result as number) * (this.factor() as number);
@@ -45,6 +37,25 @@ export default class Interpreter {
                 case TokenType.DIV:
                     this.eat(TokenType.DIV);
                     result = (result as number) / (this.factor() as number);
+                    break;
+            }
+        }
+
+        return result;
+    }
+
+    expr(): TokenValue {
+        let result: TokenValue = this.term();
+
+        while (this.currentToken.getType() & (TokenType.PLUS | TokenType.MINUS)) {
+            switch (this.currentToken.getType()) {
+                case TokenType.PLUS:
+                    this.eat(TokenType.PLUS);
+                    result = (result as number) + (this.term() as number);
+                    break;
+                case TokenType.MINUS:
+                    this.eat(TokenType.MINUS);
+                    result = (result as number) - (this.term() as number);
                     break;
             }
         }

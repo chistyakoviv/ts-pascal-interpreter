@@ -1,2 +1,3 @@
-expr: factor ((PLUS | MINUS | MULT | DIV) factor)*
+expr: factor ((PLUS | MINUS) factor)*
+term: factor ((MULT | DIV) factor)*
 factor: INTEGER
