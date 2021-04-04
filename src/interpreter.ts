@@ -21,8 +21,19 @@ export default class Interpreter {
 
     factor(): TokenValue {
         const token = this.currentToken;
-        this.eat(TokenType.NUMBER);
-        return token.getValue();
+
+        switch (token.getType()) {
+            case TokenType.NUMBER:
+                this.eat(TokenType.NUMBER);
+                return token.getValue();
+            case TokenType.LPAREN:
+                this.eat(TokenType.LPAREN);
+                const result: TokenValue = this.expr();
+                this.eat(TokenType.RPAREN);
+                return result;
+        }
+
+        throw new ParseError();
     }
 
     term(): TokenValue {
