@@ -1,5 +1,6 @@
 import BinOp from './ast/binop';
 import Num from './ast/num';
+import UnaryOp from './ast/unaryop';
 import ParseError from './errors/parse_error';
 import NodeVisitor from './node_visitor';
 import Parser from './parser';
@@ -29,6 +30,17 @@ export default class Interpreter extends NodeVisitor {
                 return this.visit(node.getLeft()) * this.visit(node.getRight());
             case TokenType.DIV:
                 return this.visit(node.getLeft()) / this.visit(node.getRight());
+        }
+
+        throw new ParseError();
+    }
+
+    visitUnaryOp(node: UnaryOp): number {
+        switch (node.getOp().getType()) {
+            case TokenType.PLUS:
+                return +this.visit(node.getNode());
+            case TokenType.MINUS:
+                return -this.visit(node.getNode());
         }
 
         throw new ParseError();

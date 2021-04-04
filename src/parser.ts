@@ -1,9 +1,10 @@
-import Token, { TokenType } from './token.js';
-import ParseError from './errors/parse_error.js';
-import Lexer from './lexer.js';
-import AST from './ast/ast.js';
-import BinOp from './ast/binop.js';
-import Num from './ast/num.js';
+import Token, { TokenType } from './token';
+import ParseError from './errors/parse_error';
+import Lexer from './lexer';
+import AST from './ast/ast';
+import BinOp from './ast/binop';
+import Num from './ast/num';
+import UnaryOp from './ast/unaryop';
 
 export default class Interpreter {
     private lexer: Lexer;
@@ -25,6 +26,12 @@ export default class Interpreter {
         const token = this.currentToken;
 
         switch (token.getType()) {
+            case TokenType.PLUS:
+                this.eat(TokenType.PLUS);
+                return new UnaryOp(token, this.factor());
+            case TokenType.MINUS:
+                this.eat(TokenType.MINUS);
+                return new UnaryOp(token, this.factor());
             case TokenType.NUMBER:
                 this.eat(TokenType.NUMBER);
                 return new Num(token);

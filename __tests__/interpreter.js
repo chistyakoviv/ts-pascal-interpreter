@@ -95,4 +95,52 @@ describe('interpreter', () => {
         // assert
         expect(result).toBe(12);
     });
+
+    it('evaluates - 3 to equal -3', () => {
+        // arrange
+        const expression = '- 3';
+        const interpreter = getInterpreter(expression);
+
+        // act
+        const result = interpreter.interpret();
+
+        // assert
+        expect(result).toBe(-3);
+    });
+
+    it('evaluates + 3 to equal 3', () => {
+        // arrange
+        const expression = '+ 3';
+        const interpreter = getInterpreter(expression);
+
+        // act
+        const result = interpreter.interpret();
+
+        // assert
+        expect(result).toBe(3);
+    });
+
+    it('evaluates 5 - - - + - 3 to equal 8', () => {
+        // arrange
+        const expression = '5 - - - + - 3';
+        const interpreter = getInterpreter(expression);
+
+        // act
+        const result = interpreter.interpret();
+
+        // assert
+        expect(result).toBe(8);
+    });
+
+    it('evaluates 5 - - - + - (3 + 4) - +2 to equal 10', () => {
+        // arrange
+        const expression = '5 - - - + - (3 + 4) - +2';
+        const interpreter = getInterpreter(expression);
+
+        // act
+        const result = interpreter.interpret();
+
+        // assert
+        expect(result).toBe(10);
+    });
 });
