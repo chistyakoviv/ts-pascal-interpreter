@@ -12,7 +12,7 @@ describe('lisp visitor', () => {
         return interpreter;
     };
 
-    it('convertes 3 + 5 to equal (+ 3 5)', () => {
+    it('converts 3 + 5 to equal (+ 3 5)', () => {
         // arrange
         const expression = '3 + 5';
         const interpreter = getInterpreter(expression);
@@ -24,7 +24,7 @@ describe('lisp visitor', () => {
         expect(result).toBe('(+ 3 5)');
     });
 
-    it('convertes 1 + 7 * 2 to equal (+ 1 (* 7 2))', () => {
+    it('converts 1 + 7 * 2 to equal (+ 1 (* 7 2))', () => {
         // arrange
         const expression = '1 + 7 * 2';
         const interpreter = getInterpreter(expression);
