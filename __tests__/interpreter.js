@@ -1,11 +1,13 @@
 const Interpreter = require('../dist/interpreter.js').default;
+const Parser = require('../dist/parser.js').default;
 const Lexer = require('../dist/lexer.js').default;
 
 describe('interpreter', () => {
 
     const getInterpreter = (text) => {
         const lexer = new Lexer(text);
-        const interpreter = new Interpreter(lexer);
+        const parser = new Parser(lexer);
+        const interpreter = new Interpreter(parser);
 
         return interpreter;
     };
@@ -16,7 +18,7 @@ describe('interpreter', () => {
         const interpreter = getInterpreter(expression);
 
         // act
-        const result = interpreter.expr();
+        const result = interpreter.interpret();
 
         // assert
         expect(result).toBe(3);
@@ -28,7 +30,7 @@ describe('interpreter', () => {
         const interpreter = getInterpreter(expression);
 
         // act
-        const result = interpreter.expr();
+        const result = interpreter.interpret();
 
         // assert
         expect(result).toBe(30);
@@ -40,7 +42,7 @@ describe('interpreter', () => {
         const interpreter = getInterpreter(expression);
 
         // act
-        const result = interpreter.expr();
+        const result = interpreter.interpret();
 
         // assert
         expect(result).toBe(5);
@@ -52,7 +54,7 @@ describe('interpreter', () => {
         const interpreter = getInterpreter(expression);
 
         // act
-        const result = interpreter.expr();
+        const result = interpreter.interpret();
 
         // assert
         expect(result).toBe(17);
@@ -64,7 +66,7 @@ describe('interpreter', () => {
         const interpreter = getInterpreter(expression);
 
         // act
-        const result = interpreter.expr();
+        const result = interpreter.interpret();
 
         // assert
         expect(result).toBe(22);
@@ -76,7 +78,7 @@ describe('interpreter', () => {
         const interpreter = getInterpreter(expression);
 
         // act
-        const result = interpreter.expr();
+        const result = interpreter.interpret();
 
         // assert
         expect(result).toBe(10);
@@ -88,7 +90,7 @@ describe('interpreter', () => {
         const interpreter = getInterpreter(expression);
 
         // act
-        const result = interpreter.expr();
+        const result = interpreter.interpret();
 
         // assert
         expect(result).toBe(12);
