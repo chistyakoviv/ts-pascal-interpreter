@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npm run clean && npm run build && npm run exec",
-    "dbg": "npm run clean && npm run build && npm run exec-dbg",
-    "build": "tsc",
+    "test": "./node_modules/jest/bin/jest.js",
+    "dbg": "npm run build && npm run exec-dbg",
+    "build": "npm run clean && tsc",
     "exec": "node ./dist/index.js",
     "exec-dbg": "node --inspect-brk ./dist/index.js",
     "clean": "rm -rf ./dist"
@@ -16,6 +16,8 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^14.14.37",
+    "jest": "^26.6.3",
+    "tslib": "^2.1.0",
     "typescript": "^4.2.3"
   }
 }
