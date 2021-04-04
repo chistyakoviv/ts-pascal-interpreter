@@ -3,7 +3,7 @@ import ParseError from './errors/parse_error.js';
 import Lexer from './lexer.js';
 import AST from './ast/ast.js';
 import BinOp from './ast/binop.js';
-import Num from './ast/Num.js';
+import Num from './ast/num.js';
 
 export default class Interpreter {
     private lexer: Lexer;

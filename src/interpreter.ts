@@ -1,6 +1,6 @@
 import AST from './ast/ast';
 import BinOp from './ast/binop';
-import Num from './ast/Num';
+import Num from './ast/num';
 import ParseError from './errors/parse_error';
 import Parser from './parser';
 import { TokenType } from './token';
