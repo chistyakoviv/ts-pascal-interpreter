@@ -1,9 +1,9 @@
-import NodeVisitor from '../node_visitor';
-import Parser from '../parser';
-import Num from '../ast/num';
-import BinOp from '../ast/binop';
-import { TokenType } from '../token';
-import ParseError from '../errors/parse_error'
+import NodeVisitor from '../node_visitor.js';
+import Parser from '../parser.js';
+import Num from '../ast/num.js';
+import BinOp from '../ast/binop.js';
+import { TokenType } from '../token.js';
+import ParseError from '../errors/parse_error.js'
 
 export default class LispVisitor extends NodeVisitor {
     private parser: Parser;

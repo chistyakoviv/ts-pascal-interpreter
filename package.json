@@ -7,9 +7,12 @@
     "test": "./node_modules/jest/bin/jest.js",
     "dbg": "npm run build && npm run exec-dbg",
     "build": "npm run clean && tsc",
-    "exec": "node ./dist/index.js",
-    "exec-dbg": "node --inspect-brk ./dist/index.js",
-    "clean": "rm -rf ./dist"
+    "exec": "node ./dist/esm2015/index.js",
+    "exec-dbg": "node --inspect-brk ./dist/esm2015/index.js",
+    "clean": "rm -rf ./dist",
+    "build:all": "npm run clean && npm run build:es5 && npm run build:es2015",
+    "build:es5": "tsc -p ./typescript/tsconfig.esm5.json",
+    "build:es2015": "tsc -p ./typescript/tsconfig.esm2015.json"
   },
   "type": "module",
   "author": "",

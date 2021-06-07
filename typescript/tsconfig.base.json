@@ -6,8 +6,11 @@
         "strictNullChecks": true,
         "alwaysStrict": true,
         "noImplicitThis": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
+
+        // disable unused variables
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
+
         "noImplicitReturns": true,
         "allowSyntheticDefaultImports": true,
         "experimentalDecorators": true,

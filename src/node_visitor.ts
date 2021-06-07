@@ -1,4 +1,4 @@
-import AST from './ast/ast';
+import AST from './ast/ast.js';
 
 export default abstract class NodeVisitor {
     visit(node: AST): number {

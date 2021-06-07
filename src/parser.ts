@@ -1,12 +1,16 @@
-import Token, { TokenType } from './token';
-import ParseError from './errors/parse_error';
-import Lexer from './lexer';
-import AST from './ast/ast';
-import BinOp from './ast/binop';
-import Num from './ast/num';
-import UnaryOp from './ast/unaryop';
+import Token, { TokenType } from './token.js';
+import ParseError from './errors/parse_error.js';
+import Lexer from './lexer.js';
+import AST from './ast/ast.js';
+import BinOp from './ast/binop.js';
+import Num from './ast/num.js';
+import UnaryOp from './ast/unaryop.js';
+import Compound from './ast/compound.js';
+import Assign from './ast/assign.js';
+import Var from './ast/var.js';
+import NoOp from './ast/noop.js';
 
-export default class Interpreter {
+export default class Parser {
     private lexer: Lexer;
     private currentToken: Token;
 
@@ -20,6 +24,72 @@ export default class Interpreter {
             throw new ParseError();
 
         this.currentToken = this.lexer.getNextToken();
+    }
+
+    program(): AST {
+        const node = this.compoundStatement();
+        this.eat(TokenType.DOT);
+        return node;
+    }
+
+    compoundStatement(): AST {
+        this.eat(TokenType.BEGIN);
+        const nodes = this.statementList();
+        this.eat(TokenType.END);
+
+        const root = new Compound();
+        for (let i = 0; i < nodes.length; i++)
+            root.push(nodes[i]);
+
+        return root;
+    }
+
+    statementList(): AST[] {
+        const result = [this.statement()];
+
+        while (this.currentToken.getType() === TokenType.SEMI) {
+            this.eat(TokenType.SEMI);
+            result.push(this.statement());
+        }
+
+        if (this.currentToken.getType() === TokenType.ID)
+            throw new ParseError();
+
+        return result;
+    }
+
+    statement(): AST {
+        let node: AST;
+
+        switch (this.currentToken.getType()) {
+            case TokenType.BEGIN:
+                node = this.compoundStatement();
+                break;
+            case TokenType.ID:
+                node = this.assignmentStatement();
+                break;
+            default:
+                node = this.empty();
+        }
+
+        return node;
+    }
+
+    assignmentStatement(): AST {
+        const left = this.variable();
+        this.eat(TokenType.ASSIGN);
+        const right = this.expr();
+        return new Assign(left, this.currentToken, right);
+    }
+
+    variable(): Var {
+        const node = new Var(this.currentToken);
+        this.eat(TokenType.ID);
+        return node;
+    }
+
+    empty(): AST {
+        return new NoOp();
     }
 
     factor(): AST {
@@ -40,6 +110,7 @@ export default class Interpreter {
                 const node: AST = this.expr();
                 this.eat(TokenType.RPAREN);
                 return node;
+            default: return this.variable();
         }
 
         throw new ParseError();
@@ -88,6 +159,11 @@ export default class Interpreter {
     }
 
     parse(): AST {
-        return this.expr();
+        const node = this.program();
+
+        if (this.currentToken.getType() !== TokenType.EOF)
+            throw new ParseError();
+
+        return node;
     }
 }

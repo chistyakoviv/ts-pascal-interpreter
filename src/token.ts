@@ -11,6 +11,12 @@ export enum TokenType {
     DIV     = bit(6),
     LPAREN  = bit(7),
     RPAREN  = bit(8),
+    ID      = bit(9),
+    ASSIGN  = bit(10),
+    BEGIN   = bit(11),
+    END     = bit(12),
+    SEMI    = bit(13),
+    DOT     = bit(14),
 }
 
 export default class Token {

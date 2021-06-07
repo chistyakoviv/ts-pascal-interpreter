@@ -1,20 +1,21 @@
 import AST from './ast.js';
 import Token from '../token.js';
+import Var from './var';
 
-export default class BinOp extends AST {
-    private left: AST;
+export default class Assign extends AST {
+    private left: Var;
     private right: AST;
     private op: Token;
 
-    constructor(left: AST, op: Token, right: AST) {
-        super('BinOp');
+    constructor(left: Var, op: Token, right: AST) {
+        super('Assign');
 
         this.left = left;
         this.right = right;
         this.op = op;
     }
 
-    getLeft(): AST {
+    getLeft(): Var {
         return this.left;
     }
 
