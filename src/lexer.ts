@@ -64,8 +64,8 @@ export default class Lexer {
             this.advance();
         }
 
-        if (RESERVED_KEYWORDS[result])
-            return RESERVED_KEYWORDS[result];
+        if (RESERVED_KEYWORDS[result.toUpperCase()])
+            return RESERVED_KEYWORDS[result.toUpperCase()];
 
         return new Token(TokenType.ID, result);
     }

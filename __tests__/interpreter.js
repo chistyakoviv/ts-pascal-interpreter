@@ -27,11 +27,11 @@ describe('interpreter', () => {
             ['5 - - - + - (3 + 4) - +2', 10],
         ].forEach((test) => {
             const [expr, result] = test;
-            const interpreter = createInterpreter('BEGIN a := %expr% END.'.replace('%expr%', expr));
+            const interpreter = createInterpreter('BEGIN _a := %expr% END.'.replace('%expr%', expr));
 
             interpreter.interpret();
             const globalScope = interpreter.getGlobalScope();
-            expect(globalScope.a).toBe(result);
+            expect(globalScope._a).toBe(result);
         });
     });
 

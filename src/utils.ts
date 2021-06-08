@@ -1,7 +1,7 @@
 import { CharType } from './types.js';
 
 export function isNumber(value: CharType): boolean {
-    return !Number.isNaN(Number(value)) && value !== null;
+    return !isNaN(Number(value)) && value !== null;
 }
 
 export function bit(shift: number): number {
@@ -21,5 +21,5 @@ export function isAlNum(value: CharType): boolean {
 }
 
 export function isAlpha(value: CharType): boolean {
-    return value !== null && /^[A-Za-z]+$/.test(value);
+    return value !== null && /^[_A-Za-z]+$/.test(value);
 }
