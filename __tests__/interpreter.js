@@ -59,4 +59,28 @@ describe('interpreter', () => {
         // assert
         expect(table).toStrictEqual({'a': 2, 'x': 11, 'c': 27, 'b': 25, 'number': 2});
     });
+
+    it(`evaluates symbol table to equal {'a': 2, 'b': 25, 'y': 5.997142857142857}`, () => {
+        // arrange
+        const src = `
+            PROGRAM Part10AST;
+            VAR
+                a, b : INTEGER;
+                y    : REAL;
+
+            BEGIN {Part10AST}
+                a := 2;
+                b := 10 * a + 10 * a DIV 4;
+                y := 20 / 7 + 3.14;
+            END.  {Part10AST}
+        `;
+        const interpreter = createInterpreter(src);
+
+        // act
+        const result = interpreter.interpret();
+        const table = interpreter.getGlobalScope();
+
+        // assert
+        expect(table).toStrictEqual({'a': 2, 'b': 25, 'y': 5.997142857142857});
+    });
 });

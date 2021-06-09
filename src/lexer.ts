@@ -4,6 +4,11 @@ import { CharType } from './types.js';
 import ParseError from './errors/parse_error.js';
 
 const RESERVED_KEYWORDS: {[key: string]: Token} = {
+    'PROGRAM': new Token(TokenType.PROGRAM, 'PROGRAM'),
+    'VAR': new Token(TokenType.VAR, 'VAR'),
+    'DIV': new Token(TokenType.DIV, 'DIV'),
+    'INTEGER': new Token(TokenType.INTEGER, 'INTEGER'),
+    'REAL': new Token(TokenType.REAL, 'REAL'),
     'BEGIN': new Token(TokenType.BEGIN, 'BEGIN'),
     'END': new Token(TokenType.END, 'END'),
 };
@@ -42,18 +47,33 @@ export default class Lexer {
             this.advance();
     }
 
-    integer(): number {
+    skipComment(): void {
+        while (this.currentChar !== '}')
+            this.advance();
+        this.advance();
+    }
+
+    number(): Token {
         let result = '';
 
-        while (isNumber(this.currentChar)/* || isDot(this.currentChar)*/) {
+        while (isNumber(this.currentChar)) {
             result += this.currentChar;
             this.advance();
         }
 
-        if (!isNumber(result))
-            throw new ParseError();
+        if (isDot(this.currentChar)) {
+            result += this.currentChar;
+            this.advance();
 
-        return Number(result);
+            while (isNumber(this.currentChar)) {
+                result += this.currentChar;
+                this.advance();
+            }
+
+            return new Token(TokenType.REAL_CONST, Number(result));
+        }
+
+        return new Token(TokenType.INTEGER_CONST, Number(result));
     }
 
     id(): Token {
@@ -80,8 +100,29 @@ export default class Lexer {
             if (isAlpha(this.currentChar))
                 return this.id();
 
-            if (isNumber(this.currentChar)/* || isDot(this.currentChar)*/)
-                return new Token(TokenType.NUMBER, this.integer());
+            if (isNumber(this.currentChar))
+                return this.number();
+
+            if (this.currentChar === '{') {
+                this.advance();
+                this.skipComment();
+                continue;
+            }
+
+            if (this.currentChar === ':') {
+                this.advance();
+                return new Token(TokenType.COLON, ':');
+            }
+
+            if (this.currentChar === ',') {
+                this.advance();
+                return new Token(TokenType.COMMA, ',');
+            }
+
+            if (this.currentChar === '/') {
+                this.advance();
+                return new Token(TokenType.FLOAT_DIV, '/');
+            }
 
             if (this.currentChar === ':' && this.peek() === '=') {
                 this.advance();
@@ -107,11 +148,6 @@ export default class Lexer {
             if (this.currentChar === '*') {
                 this.advance();
                 return new Token(TokenType.MULT, '*');
-            }
-
-            if (this.currentChar === '/') {
-                this.advance();
-                return new Token(TokenType.DIV, '/');
             }
 
             if (this.currentChar === '(') {

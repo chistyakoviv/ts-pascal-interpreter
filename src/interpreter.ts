@@ -11,6 +11,10 @@ import Parser from './parser.js';
 import { TokenType } from './token.js';
 import { TokenValue } from './types.js';
 import NoOp from './ast/noop.js';
+import Program from './ast/program.js';
+import Block from './ast/block.js';
+import VarDecl from './ast/var_decl.js';
+import Type from './ast/type.js';
 
 export default class Interpreter extends NodeVisitor {
     private parser: Parser;
@@ -26,6 +30,21 @@ export default class Interpreter extends NodeVisitor {
         return this.globalScope;
     }
 
+    visitProgram(node: Program): void {
+        this.visit(node.getBlock());
+    }
+
+    visitBlock(node: Block): void {
+        node.getDeclarations()
+            .forEach(decl => decl.forEach(node => this.visit(node)));
+
+        this.visit(node.getCompoundStatement());
+    }
+
+    visitVarDecl(node: VarDecl) {}
+
+    visitType(node: Type) {}
+
     visitBinOp(node: BinOp): number {
         switch (node.getOp().getType()) {
             case TokenType.PLUS:
@@ -34,7 +53,9 @@ export default class Interpreter extends NodeVisitor {
                 return this.visit(node.getLeft()) - this.visit(node.getRight());
             case TokenType.MULT:
                 return this.visit(node.getLeft()) * this.visit(node.getRight());
-            case TokenType.DIV:
+            case TokenType.INTEGER_DIV:
+                return Math.floor(this.visit(node.getLeft()) / this.visit(node.getRight()));
+            case TokenType.FLOAT_DIV:
                 return this.visit(node.getLeft()) / this.visit(node.getRight());
         }
 

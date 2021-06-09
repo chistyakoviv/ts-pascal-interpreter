@@ -9,6 +9,10 @@ import Compound from './ast/compound.js';
 import Assign from './ast/assign.js';
 import Var from './ast/var.js';
 import NoOp from './ast/noop.js';
+import Program from './ast/program';
+import Block from './ast/block.js';
+import VarDecl from './ast/var_decl.js';
+import Type from './ast/type.js';
 
 export default class Parser {
     private lexer: Lexer;
@@ -26,13 +30,71 @@ export default class Parser {
         this.currentToken = this.lexer.getNextToken();
     }
 
-    program(): AST {
-        const node = this.compoundStatement();
+    program(): Program {
+        this.eat(TokenType.PROGRAM);
+        const varNode = this.variable();
+        const progName = varNode.getValue() as string;
+        this.eat(TokenType.SEMI);
+        const blockNode = this.block();
+        const programNode = new Program(progName, blockNode);
         this.eat(TokenType.DOT);
-        return node;
+        return programNode;
     }
 
-    compoundStatement(): AST {
+    block(): Block {
+        const declarationNodes = this.declarations();
+        const compoundStatementNode = this.compoundStatement();
+        return new Block(declarationNodes, compoundStatementNode);
+    }
+
+    declarations(): VarDecl[][] {
+        const declarations = [];
+
+        if (this.currentToken.getType() === TokenType.VAR) {
+            this.eat(TokenType.VAR);
+
+            while (this.currentToken.getType() === TokenType.ID) {
+                const varDecl: VarDecl[] = this.variableDeclaration();
+                declarations.push(varDecl);
+                this.eat(TokenType.SEMI);
+            }
+        }
+
+        return declarations;
+    }
+
+    variableDeclaration(): VarDecl[] {
+        const varNodes = [new Var(this.currentToken)];
+        this.eat(TokenType.ID);
+
+        while (this.currentToken.getType() === TokenType.COMMA) {
+            this.eat(TokenType.COMMA);
+            varNodes.push(new Var(this.currentToken));
+            this.eat(TokenType.ID);
+        }
+
+        this.eat(TokenType.COLON);
+
+        const typeNode = this.typeSpec();
+        return varNodes.map(node => new VarDecl(node, typeNode));
+    }
+
+    typeSpec(): Type {
+        const token = this.currentToken;
+
+        switch (this.currentToken.getType()) {
+            case TokenType.INTEGER:
+                this.eat(TokenType.INTEGER);
+                break;
+            case TokenType.REAL:
+                this.eat(TokenType.REAL);
+                break;
+        }
+
+        return new Type(token);
+    }
+
+    compoundStatement(): Compound {
         this.eat(TokenType.BEGIN);
         const nodes = this.statementList();
         this.eat(TokenType.END);
@@ -92,6 +154,30 @@ export default class Parser {
         return new NoOp();
     }
 
+    term(): AST {
+        let node: AST = this.factor();
+
+        while (this.currentToken.getType() & (TokenType.MULT | TokenType.INTEGER_DIV | TokenType.FLOAT_DIV)) {
+            const op: Token = this.currentToken;
+
+            switch (this.currentToken.getType()) {
+                case TokenType.MULT:
+                    this.eat(TokenType.MULT);
+                    break;
+                case TokenType.INTEGER_DIV:
+                    this.eat(TokenType.INTEGER_DIV);
+                    break;
+                case TokenType.FLOAT_DIV:
+                    this.eat(TokenType.FLOAT_DIV);
+                    break;
+            }
+
+            node = new BinOp(node, op, this.factor());
+        }
+
+        return node;
+    }
+
     factor(): AST {
         const token = this.currentToken;
 
@@ -102,8 +188,11 @@ export default class Parser {
             case TokenType.MINUS:
                 this.eat(TokenType.MINUS);
                 return new UnaryOp(token, this.factor());
-            case TokenType.NUMBER:
-                this.eat(TokenType.NUMBER);
+            case TokenType.INTEGER_CONST:
+                this.eat(TokenType.INTEGER_CONST);
+                return new Num(token);
+            case TokenType.REAL_CONST:
+                this.eat(TokenType.REAL_CONST);
                 return new Num(token);
             case TokenType.LPAREN:
                 this.eat(TokenType.LPAREN);
@@ -112,29 +201,6 @@ export default class Parser {
                 return node;
             default: return this.variable();
         }
-
-        throw new ParseError();
-    }
-
-    term(): AST {
-        let node: AST = this.factor();
-
-        while (this.currentToken.getType() & (TokenType.MULT | TokenType.DIV)) {
-            const op: Token = this.currentToken;
-
-            switch (this.currentToken.getType()) {
-                case TokenType.MULT:
-                    this.eat(TokenType.MULT);
-                    break;
-                case TokenType.DIV:
-                    this.eat(TokenType.DIV);
-                    break;
-            }
-
-            node = new BinOp(node, op, this.factor());
-        }
-
-        return node;
     }
 
     expr(): AST {
@@ -158,7 +224,7 @@ export default class Parser {
         return node;
     }
 
-    parse(): AST {
+    parse(): Program {
         const node = this.program();
 
         if (this.currentToken.getType() !== TokenType.EOF)
