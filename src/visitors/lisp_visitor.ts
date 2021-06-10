@@ -26,7 +26,7 @@ export default class LispVisitor extends NodeVisitor {
                 return `(- ${this.visit(node.getLeft())} ${this.visit(node.getRight())})`;
             case TokenType.MULT:
                 return `(* ${this.visit(node.getLeft())} ${this.visit(node.getRight())})`;
-            case TokenType.DIV:
+            case TokenType.INTEGER_DIV:
                 return `(/ ${this.visit(node.getLeft())} ${this.visit(node.getRight())})`;
         }
 

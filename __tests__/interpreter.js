@@ -27,7 +27,7 @@ describe('interpreter', () => {
             ['5 - - - + - (3 + 4) - +2', 10],
         ].forEach((test) => {
             const [expr, result] = test;
-            const interpreter = createInterpreter('BEGIN _a := %expr% END.'.replace('%expr%', expr));
+            const interpreter = createInterpreter('PROGRAM test; BEGIN _a := %expr% END.'.replace('%expr%', expr));
 
             interpreter.interpret();
             const globalScope = interpreter.getGlobalScope();
@@ -38,6 +38,11 @@ describe('interpreter', () => {
     it(`evaluates symbol table to equal {'a': 2, 'x': 11, 'c': 27, 'b': 25, 'number': 2}`, () => {
         // arrange
         const src = `
+            PROGRAM Test;
+
+            VAR
+                a, b, c, x : INTEGER;
+
             BEGIN
 
                 BEGIN
@@ -64,6 +69,7 @@ describe('interpreter', () => {
         // arrange
         const src = `
             PROGRAM Part10AST;
+
             VAR
                 a, b : INTEGER;
                 y    : REAL;

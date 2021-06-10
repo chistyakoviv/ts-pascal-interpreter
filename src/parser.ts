@@ -108,7 +108,7 @@ export default class Parser {
 
     statementList(): AST[] {
         const result = [this.statement()];
-
+debugger;
         while (this.currentToken.getType() === TokenType.SEMI) {
             this.eat(TokenType.SEMI);
             result.push(this.statement());

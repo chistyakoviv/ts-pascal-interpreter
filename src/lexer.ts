@@ -6,7 +6,7 @@ import ParseError from './errors/parse_error.js';
 const RESERVED_KEYWORDS: {[key: string]: Token} = {
     'PROGRAM': new Token(TokenType.PROGRAM, 'PROGRAM'),
     'VAR': new Token(TokenType.VAR, 'VAR'),
-    'DIV': new Token(TokenType.DIV, 'DIV'),
+    'DIV': new Token(TokenType.INTEGER_DIV, 'DIV'),
     'INTEGER': new Token(TokenType.INTEGER, 'INTEGER'),
     'REAL': new Token(TokenType.REAL, 'REAL'),
     'BEGIN': new Token(TokenType.BEGIN, 'BEGIN'),
@@ -103,6 +103,12 @@ export default class Lexer {
             if (isNumber(this.currentChar))
                 return this.number();
 
+            if (this.currentChar === ':' && this.peek() === '=') {
+                this.advance();
+                this.advance();
+                return new Token(TokenType.ASSIGN, ':=');
+            }
+
             if (this.currentChar === '{') {
                 this.advance();
                 this.skipComment();
@@ -122,12 +128,6 @@ export default class Lexer {
             if (this.currentChar === '/') {
                 this.advance();
                 return new Token(TokenType.FLOAT_DIV, '/');
-            }
-
-            if (this.currentChar === ':' && this.peek() === '=') {
-                this.advance();
-                this.advance();
-                return new Token(TokenType.ASSIGN, ':=');
             }
 
             if (this.currentChar === ';') {

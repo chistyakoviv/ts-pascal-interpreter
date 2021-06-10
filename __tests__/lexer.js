@@ -5,12 +5,20 @@ describe('lexer', () => {
 
     const createLexer = (text) => new Lexer(text);
 
-    it(`evaluates '123' to equal to TokenType.NUMBER`, () => {
+    it(`evaluates '123' to equal to TokenType.INTEGER_CONST`, () => {
         const lexer = createLexer('123');
         const token = lexer.getNextToken();
 
-        expect(token.getType()).toBe(TokenType.NUMBER);
+        expect(token.getType()).toBe(TokenType.INTEGER_CONST);
         expect(token.getValue()).toBe(123);
+    });
+
+    it(`evaluates '123.456' to equal to TokenType.REAL_CONST`, () => {
+        const lexer = createLexer('123.456');
+        const token = lexer.getNextToken();
+
+        expect(token.getType()).toBe(TokenType.REAL_CONST);
+        expect(token.getValue()).toBe(123.456);
     });
 
     it(`evaluates '*' to equal to TokenType.MULT`, () => {
@@ -21,11 +29,11 @@ describe('lexer', () => {
         expect(token.getValue()).toBe('*');
     });
 
-    it(`evaluates '/' to equal to TokenType.DIV`, () => {
+    it(`evaluates '/' to equal to TokenType.FLOAT_DIV`, () => {
         const lexer = createLexer('/');
         const token = lexer.getNextToken();
 
-        expect(token.getType()).toBe(TokenType.DIV);
+        expect(token.getType()).toBe(TokenType.FLOAT_DIV);
         expect(token.getValue()).toBe('/');
     });
 
