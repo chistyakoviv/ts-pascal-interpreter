@@ -30,7 +30,7 @@ export default class Parser {
         this.currentToken = this.lexer.getNextToken();
     }
 
-    program(): Program {
+    program(): Program {debugger;
         this.eat(TokenType.PROGRAM);
         const varNode = this.variable();
         const progName = varNode.getValue() as string;
@@ -108,7 +108,7 @@ export default class Parser {
 
     statementList(): AST[] {
         const result = [this.statement()];
-debugger;
+
         while (this.currentToken.getType() === TokenType.SEMI) {
             this.eat(TokenType.SEMI);
             result.push(this.statement());

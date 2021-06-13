@@ -86,11 +86,7 @@ export default class Interpreter extends NodeVisitor {
     }
 
     visitVar(node: Var): number {
-        const varName = node.getValue();
-
-        if (varName === null)
-            throw new NameError('null');
-
+        const varName = node.getValue() as string;
         const val = this.globalScope[varName];
 
         if (!val)

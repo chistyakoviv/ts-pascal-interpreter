@@ -12,4 +12,12 @@ export default class VarDecl extends AST {
         this.varNode = varNode;
         this.typeNode = typeNode;
     }
+
+    getTypeNode(): Type {
+        return this.typeNode;
+    }
+
+    getVarNode(): Var {
+        return this.varNode;
+    }
 }
