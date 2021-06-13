@@ -17,6 +17,7 @@ import Block from '../ast/block.js';
 import VarDecl from '../ast/var_decl.js';
 import Type from '../ast/type.js';
 import NameError from '../errors/name_error.js';
+import ProcedureDecl from '../ast/procedure_decl.js';
 
 export default class SymbolTableBuilder extends NodeVisitor {
     private symtab: SymbolTable;
@@ -29,7 +30,7 @@ export default class SymbolTableBuilder extends NodeVisitor {
 
     visitBlock(node: Block): void {
         node.getDeclarations()
-            .forEach(decl => decl.forEach(node => this.visit(node)));
+            .forEach(decl => Array.isArray(decl) ? decl.forEach(node => this.visit(node)) : this.visit(decl));
 
         this.visit(node.getCompoundStatement());
     }
@@ -62,6 +63,8 @@ export default class SymbolTableBuilder extends NodeVisitor {
         const varSymbol = new VarSymbol(varName, typeSymbol);
         this.symtab.define(varSymbol);
     }
+
+    visitProcedureDecl(node: ProcedureDecl) {}
 
     visitAssign(node: Assign): void {
         const varName = node.getLeft().getValue() as string;

@@ -11,6 +11,7 @@ const RESERVED_KEYWORDS: {[key: string]: Token} = {
     'REAL': new Token(TokenType.REAL, 'REAL'),
     'BEGIN': new Token(TokenType.BEGIN, 'BEGIN'),
     'END': new Token(TokenType.END, 'END'),
+    'PROCEDURE': new Token(TokenType.PROCEDURE, 'PROCEDURE'),
 };
 
 export default class Lexer {

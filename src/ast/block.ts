@@ -3,17 +3,17 @@ import Compound from './compound.js';
 import VarDecl from './var_decl.js';
 
 export default class Block extends AST {
-    private declarations: VarDecl[][];
+    private declarations: (AST[] | AST)[];
     private compoundStatement: Compound;
 
-    constructor(declarations: VarDecl[][], compoundStatement: Compound) {
+    constructor(declarations: (AST[] | AST)[], compoundStatement: Compound) {
         super('Block');
 
         this.declarations = declarations;
         this.compoundStatement = compoundStatement;
     }
 
-    getDeclarations(): VarDecl[][] {
+    getDeclarations(): (AST[] | AST)[] {
         return this.declarations;
     }
 

@@ -13,6 +13,7 @@ import Program from './ast/program';
 import Block from './ast/block.js';
 import VarDecl from './ast/var_decl.js';
 import Type from './ast/type.js';
+import ProcedureDecl from './ast/procedure_decl.js';
 
 export default class Parser {
     private lexer: Lexer;
@@ -47,7 +48,7 @@ export default class Parser {
         return new Block(declarationNodes, compoundStatementNode);
     }
 
-    declarations(): VarDecl[][] {
+    declarations(): (AST[] | AST)[] {
         const declarations = [];
 
         if (this.currentToken.getType() === TokenType.VAR) {
@@ -58,6 +59,17 @@ export default class Parser {
                 declarations.push(varDecl);
                 this.eat(TokenType.SEMI);
             }
+        }
+
+        while (this.currentToken.getType() === TokenType.PROCEDURE) {
+            this.eat(TokenType.PROCEDURE);
+            const procName = this.currentToken.getValue() as string;
+            this.eat(TokenType.ID);
+            this.eat(TokenType.SEMI);
+            const blockNode = this.block();
+            const procDecl = new ProcedureDecl(procName, blockNode);
+            declarations.push(procDecl);
+            this.eat(TokenType.SEMI);
         }
 
         return declarations;

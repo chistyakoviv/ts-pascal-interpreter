@@ -15,6 +15,7 @@ import Program from './ast/program.js';
 import Block from './ast/block.js';
 import VarDecl from './ast/var_decl.js';
 import Type from './ast/type.js';
+import ProcedureDecl from './ast/procedure_decl.js';
 
 export default class Interpreter extends NodeVisitor {
     private parser: Parser;
@@ -36,12 +37,14 @@ export default class Interpreter extends NodeVisitor {
 
     visitBlock(node: Block): void {
         node.getDeclarations()
-            .forEach(decl => decl.forEach(node => this.visit(node)));
+            .forEach(decl => Array.isArray(decl) ? decl.forEach(node => this.visit(node)) : this.visit(decl));
 
         this.visit(node.getCompoundStatement());
     }
 
     visitVarDecl(node: VarDecl) {}
+
+    visitProcedureDecl(node: ProcedureDecl) {}
 
     visitType(node: Type) {}
 

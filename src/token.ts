@@ -25,6 +25,7 @@ export enum TokenType {
     FLOAT_DIV       = bit(20),
     COLON           = bit(21),
     COMMA           = bit(22),
+    PROCEDURE       = bit(23),
 }
 
 export default class Token {
