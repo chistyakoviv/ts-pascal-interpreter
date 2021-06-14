@@ -19,7 +19,7 @@ import Type from '../ast/type.js';
 import NameError from '../errors/name_error.js';
 import ProcedureDecl from '../ast/procedure_decl.js';
 
-export default class SymbolTableBuilder extends NodeVisitor {
+export default class SemanticAnalyzer extends NodeVisitor {
     private symtab: SymbolTable;
 
     constructor() {
@@ -61,6 +61,10 @@ export default class SymbolTableBuilder extends NodeVisitor {
         const typeSymbol = this.symtab.lookup(typeName) as Symb;
         const varName = node.getVarNode().getValue() as string;
         const varSymbol = new VarSymbol(varName, typeSymbol);
+
+        if (this.symtab.lookup(varName) !== null)
+            throw new Error(`Duplecate identifier ${varName} found`);
+
         this.symtab.define(varSymbol);
     }
 

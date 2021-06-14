@@ -1,17 +1,17 @@
-const SymbolTableBuilder = require('../dist/cjs/visitors/symbol_table_builder.js').default;
+const SemanticAnalyzer = require('../dist/cjs/visitors/semantic_analyzer.js').default;
 const Parser = require('../dist/cjs/parser.js').default;
 const Lexer = require('../dist/cjs/lexer.js').default;
 // const NameError = require('../dist/cjs/errors/name_error.js').default;
 
 describe('symbol table', () => {
 
-    const createSymbolTableRunner = (text) => {
+    const createSemanticAnalyzer = (text) => {
         return function() {
             const lexer = new Lexer(text);
             const parser = new Parser(lexer);
-            const symbolTableBuilder = new SymbolTableBuilder();
+            const semanticAnalyzer = new SemanticAnalyzer();
             const tree = parser.parse();
-            return symbolTableBuilder.visit(tree);
+            return semanticAnalyzer.visit(tree);
         };
     };
 
@@ -26,12 +26,12 @@ describe('symbol table', () => {
                a := 2 + b;
             END.
         `;
-        const runSymbolTableBuilder = createSymbolTableRunner(src);
+        const runSemanticAnalyzer = createSemanticAnalyzer(src);
 
         // act
         // assert
-        expect(runSymbolTableBuilder).toThrow(Error);
-        expect(runSymbolTableBuilder).toThrow('Unexpected token b');
+        expect(runSemanticAnalyzer).toThrow(Error);
+        expect(runSemanticAnalyzer).toThrow('Unexpected token b');
     });
 
     it(`throws the parsing error 'Unexpected token a' when assigning an expression to a`, () => {
@@ -46,11 +46,11 @@ describe('symbol table', () => {
                 a := b + 2;
             END.
         `;
-        const runSymbolTableBuilder = createSymbolTableRunner(src);
+        const runSemanticAnalyzer = createSemanticAnalyzer(src);
 
         // act
         // assert
-        expect(runSymbolTableBuilder).toThrow(Error);
-        expect(runSymbolTableBuilder).toThrow('Unexpected token a');
+        expect(runSemanticAnalyzer).toThrow(Error);
+        expect(runSemanticAnalyzer).toThrow('Unexpected token a');
     });
 });
