@@ -4,19 +4,24 @@ import VarSymbol from './symbols/var_symbol.js';
 import { TokenType } from './token.js'
 import { TYPE_NAMES } from './ast/type.js';
 
-export default class SymbolTable {
+export default class ScopedSymbolTable {
     private symbols: {[key: string]: Symb} = {};
+    private scopeName: string;
+    private scopeLevel: number;
 
-    constructor() {
+    constructor(scopeName: string, scopeLevel: number) {
+        this.scopeName = scopeName;
+        this.scopeLevel = scopeLevel;
+
         this.init();
     }
 
     private init(): void {
-        this.define(new BuiltinTypeSymbol(TYPE_NAMES[TokenType.INTEGER]));
-        this.define(new BuiltinTypeSymbol(TYPE_NAMES[TokenType.REAL]));
+        this.insert(new BuiltinTypeSymbol(TYPE_NAMES[TokenType.INTEGER]));
+        this.insert(new BuiltinTypeSymbol(TYPE_NAMES[TokenType.REAL]));
     }
 
-    define(symb: Symb): void {
+    insert(symb: Symb): void {
         this.symbols[symb.getName()] = symb;
     }
 

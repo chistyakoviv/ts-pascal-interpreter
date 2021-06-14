@@ -1,5 +1,5 @@
 import NodeVisitor from '../node_visitor.js';
-import SymbolTable from '../symbol_table.js';
+import ScopedSymbolTable from '../scoped_symbol_table.js';
 import VarSymbol from '../symbols/var_symbol.js';
 import Symb from '../symbols/symbol.js';
 
@@ -20,12 +20,12 @@ import NameError from '../errors/name_error.js';
 import ProcedureDecl from '../ast/procedure_decl.js';
 
 export default class SemanticAnalyzer extends NodeVisitor {
-    private symtab: SymbolTable;
+    private scope: ScopedSymbolTable;
 
     constructor() {
         super();
 
-        this.symtab = new SymbolTable();
+        this.scope = new ScopedSymbolTable('global', 1);
     }
 
     visitBlock(node: Block): void {
@@ -58,21 +58,21 @@ export default class SemanticAnalyzer extends NodeVisitor {
 
     visitVarDecl(node: VarDecl) {
         const typeName = node.getTypeNode().getValue() as string;
-        const typeSymbol = this.symtab.lookup(typeName) as Symb;
+        const typeSymbol = this.scope.lookup(typeName) as Symb;
         const varName = node.getVarNode().getValue() as string;
         const varSymbol = new VarSymbol(varName, typeSymbol);
 
-        if (this.symtab.lookup(varName) !== null)
+        if (this.scope.lookup(varName) !== null)
             throw new Error(`Duplecate identifier ${varName} found`);
 
-        this.symtab.define(varSymbol);
+        this.scope.insert(varSymbol);
     }
 
     visitProcedureDecl(node: ProcedureDecl) {}
 
     visitAssign(node: Assign): void {
         const varName = node.getLeft().getValue() as string;
-        const varSymbol = this.symtab.lookup(varName);
+        const varSymbol = this.scope.lookup(varName);
 
         if (!varSymbol)
             throw new NameError(varName);
@@ -82,7 +82,7 @@ export default class SemanticAnalyzer extends NodeVisitor {
 
     visitVar(node: Var): void {
         const varName = node.getValue() as string;
-        const varSymbol = this.symtab.lookup(varName);
+        const varSymbol = this.scope.lookup(varName);
 
         if (!varSymbol)
             throw new NameError(varName);

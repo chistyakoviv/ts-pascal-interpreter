@@ -2,6 +2,7 @@ import Interpreter from './interpreter.js';
 import readline from 'readline';
 import Lexer from './lexer.js';
 import Parser from './parser.js';
+import SemanticAnalyzer from './visitors/semantic_analyzer.js';
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -25,6 +26,7 @@ rl.question('>>> ', (text: string) => {
 
     const lexer = new Lexer(test);
     const parser = new Parser(lexer);
+    // const semanticAnalyzer = new SemanticAnalyzer();
     const interpreter = new Interpreter(parser);
     const result: any = interpreter.interpret();
 
