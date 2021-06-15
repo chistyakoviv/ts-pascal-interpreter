@@ -3,10 +3,15 @@
     block : declarations compound_statement
 
     declarations : VAR (variable_declaration SEMI)+
-                 | (PROCEDURE ID SEMI block SEMI)*
+                 | (PROCEDURE ID (LPAREN formal_parameter_list RPAREN)? SEMI block SEMI)*
                  | empty
 
     variable_declaration : ID (COMMA ID)* COLON type_spec
+
+    formal_parameter_list : formal_parameters
+                          | formal_parameters SEMI formal_parameter_list
+
+    formal_parameters : ID (COMMA ID)* COLON type_spec
 
     type_spec : INTEGER | REAL
 

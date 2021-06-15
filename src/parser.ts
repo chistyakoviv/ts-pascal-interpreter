@@ -14,6 +14,7 @@ import Block from './ast/block.js';
 import VarDecl from './ast/var_decl.js';
 import Type from './ast/type.js';
 import ProcedureDecl from './ast/procedure_decl.js';
+import Param from './ast/param.js';
 
 export default class Parser {
     private lexer: Lexer;
@@ -51,25 +52,37 @@ export default class Parser {
     declarations(): (AST[] | AST)[] {
         const declarations = [];
 
-        if (this.currentToken.getType() === TokenType.VAR) {
-            this.eat(TokenType.VAR);
+        while (true) {
+            if (this.currentToken.getType() === TokenType.VAR) {
+                this.eat(TokenType.VAR);
 
-            while (this.currentToken.getType() === TokenType.ID) {
-                const varDecl: VarDecl[] = this.variableDeclaration();
-                declarations.push(varDecl);
+                while (this.currentToken.getType() === TokenType.ID) {
+                    const varDecl: VarDecl[] = this.variableDeclaration();
+                    declarations.push(varDecl);
+                    this.eat(TokenType.SEMI);
+                }
+            } else if (this.currentToken.getType() === TokenType.PROCEDURE) {
+                this.eat(TokenType.PROCEDURE);
+                const procName = this.currentToken.getValue() as string;
+                this.eat(TokenType.ID);
+
+                let params: Param[] = [];
+
+                if (this.currentToken.getType() === TokenType.LPAREN) {
+                    this.eat(TokenType.LPAREN);
+                    params = this.formalParameterList();
+                    this.eat(TokenType.RPAREN);
+                }
+
                 this.eat(TokenType.SEMI);
+                const blockNode = this.block();
+                const procDecl = new ProcedureDecl(procName, params, blockNode);
+                declarations.push(procDecl);
+                this.eat(TokenType.SEMI);
+                break;
+            } else {
+                break;
             }
-        }
-
-        while (this.currentToken.getType() === TokenType.PROCEDURE) {
-            this.eat(TokenType.PROCEDURE);
-            const procName = this.currentToken.getValue() as string;
-            this.eat(TokenType.ID);
-            this.eat(TokenType.SEMI);
-            const blockNode = this.block();
-            const procDecl = new ProcedureDecl(procName, blockNode);
-            declarations.push(procDecl);
-            this.eat(TokenType.SEMI);
         }
 
         return declarations;
@@ -89,6 +102,40 @@ export default class Parser {
 
         const typeNode = this.typeSpec();
         return varNodes.map(node => new VarDecl(node, typeNode));
+    }
+
+    formalParameterList(): Param[] {
+        if (this.currentToken.getType() !== TokenType.ID)
+            return [];
+
+        let paramNodes: Param[] = this.formalParameters();
+
+        while (this.currentToken.getType() === TokenType.SEMI) {
+            this.eat(TokenType.SEMI);
+            paramNodes = [...paramNodes, ...this.formalParameters()];
+        }
+
+        return paramNodes;
+    }
+
+    formalParameters(): Param[] {
+        const paramNodes: Param[] = [];
+        const paramTokens: Token[] = [this.currentToken];
+
+        this.eat(TokenType.ID);
+
+        while (this.currentToken.getType() === TokenType.COMMA) {
+            this.eat(TokenType.COMMA);
+            paramTokens.push(this.currentToken);
+            this.eat(TokenType.ID);
+        }
+
+        this.eat(TokenType.COLON);
+        const typeNode = this.typeSpec();
+
+        paramTokens.forEach(t => paramNodes.push(new Param(new Var(t), typeNode)));
+
+        return paramNodes;
     }
 
     typeSpec(): Type {
