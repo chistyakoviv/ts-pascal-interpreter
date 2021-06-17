@@ -1,5 +1,5 @@
-import { bit } from './utils.js';
-import { TokenValue } from './types.js';
+import { bit } from './utils';
+import { TokenValue } from './types';
 
 export enum TokenType {
     NONE            = bit(0),

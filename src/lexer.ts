@@ -1,7 +1,7 @@
-import Token, { TokenType } from './token.js';
-import { isNumber, isSpace, isDot, isAlNum, isAlpha } from './utils.js';
-import { CharType } from './types.js';
-import ParseError from './errors/parse_error.js';
+import Token, { TokenType } from './token';
+import { isNumber, isSpace, isDot, isAlNum, isAlpha } from './utils';
+import { CharType } from './types';
+import ParseError from './errors/parse_error';
 
 const RESERVED_KEYWORDS: {[key: string]: Token} = {
     'PROGRAM': new Token(TokenType.PROGRAM, 'PROGRAM'),

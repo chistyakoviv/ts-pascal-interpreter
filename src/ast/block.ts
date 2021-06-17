@@ -1,6 +1,6 @@
-import AST from './ast.js';
-import Compound from './compound.js';
-import VarDecl from './var_decl.js';
+import AST from './ast';
+import Compound from './compound';
+import VarDecl from './var_decl';
 
 export default class Block extends AST {
     private declarations: (AST[] | AST)[];

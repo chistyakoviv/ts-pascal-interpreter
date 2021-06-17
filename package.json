@@ -15,7 +15,7 @@
     "exec": "node ./dist/esm2015/index",
     "exec-dbg": "node --inspect-brk ./dist/esm2015/index",
     "clean": "rm -rf ./dist",
-    "build": "npm run clean && npm run build:es5 && npm run build:es2015 && npm run build:cjs",
+    "build": "npm run clean && npm run build:cjs",
     "build:cjs": "tsc -p ./typescript/tsconfig.cjs.json",
     "build:es5": "tsc -p ./typescript/tsconfig.esm5.json",
     "build:es2015": "tsc -p ./typescript/tsconfig.esm2015.json"

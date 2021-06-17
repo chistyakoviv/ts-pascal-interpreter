@@ -1,6 +1,6 @@
-import AST from './ast.js';
-import Block from './block.js';
-import Param from'./param.js';
+import AST from './ast';
+import Block from './block';
+import Param from'./param';
 
 export default class ProcedureDecl extends AST {
     private procName: string;

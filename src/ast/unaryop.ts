@@ -1,5 +1,5 @@
-import AST from './ast.js';
-import Token from '../token.js';
+import AST from './ast';
+import Token from '../token';
 
 export default class UnaryOp extends AST {
     private op: Token;

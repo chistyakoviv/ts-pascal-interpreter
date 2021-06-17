@@ -1,6 +1,6 @@
-import Token, { TokenType } from '../token.js';
-import { TokenValue } from '../types.js';
-import AST from './ast.js';
+import Token, { TokenType } from '../token';
+import { TokenValue } from '../types';
+import AST from './ast';
 
 export const TYPE_NAMES  = {
     [TokenType.INTEGER]: 'INTEGER',

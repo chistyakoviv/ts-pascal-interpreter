@@ -1,4 +1,4 @@
-import AST from './ast.js';
+import AST from './ast';
 
 export default class Compound extends AST {
     private children: AST[] = [];

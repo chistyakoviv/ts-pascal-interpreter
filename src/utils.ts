@@ -1,4 +1,4 @@
-import { CharType } from './types.js';
+import { CharType } from './types';
 
 export function isNumber(value: CharType): boolean {
     return value !== null && !isNaN(Number(value));

@@ -1,6 +1,6 @@
-import Token from '../token.js';
-import { TokenValue } from '../types.js';
-import AST from './ast.js';
+import Token from '../token';
+import { TokenValue } from '../types';
+import AST from './ast';
 
 export default class Num extends AST {
     private token: Token;

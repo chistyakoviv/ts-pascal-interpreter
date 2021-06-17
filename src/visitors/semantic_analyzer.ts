@@ -1,31 +1,34 @@
-import NodeVisitor from '../node_visitor.js';
-import ScopedSymbolTable from '../scoped_symbol_table.js';
-import VarSymbol from '../symbols/var_symbol.js';
-import Symb from '../symbols/symbol.js';
+import NodeVisitor from '../node_visitor';
+import ScopedSymbolTable from '../scoped_symbol_table';
+import VarSymbol from '../symbols/var_symbol';
+import Symb from '../symbols/symbol';
 
-import Assign from '../ast/assign.js';
-import BinOp from '../ast/binop.js';
-import Compound from '../ast/compound.js';
-import Num from '../ast/num.js';
-import Var from '../ast/var.js';
-import UnaryOp from '../ast/unaryop.js';
-import { TokenType } from '../token.js';
-import { TokenValue } from '../types.js';
-import NoOp from '../ast/noop.js';
-import Program from '../ast/program.js';
-import Block from '../ast/block.js';
-import VarDecl from '../ast/var_decl.js';
-import Type from '../ast/type.js';
-import NameError from '../errors/name_error.js';
-import ProcedureDecl from '../ast/procedure_decl.js';
+import Assign from '../ast/assign';
+import BinOp from '../ast/binop';
+import Compound from '../ast/compound';
+import Num from '../ast/num';
+import Var from '../ast/var';
+import UnaryOp from '../ast/unaryop';
+import { TokenType } from '../token';
+import { TokenValue } from '../types';
+import NoOp from '../ast/noop';
+import Program from '../ast/program';
+import Block from '../ast/block';
+import VarDecl from '../ast/var_decl';
+import Type from '../ast/type';
+import NameError from '../errors/name_error';
+import ProcedureDecl from '../ast/procedure_decl';
+import ProcedureSymbol from '../symbols/procedure_symbol';
 
 export default class SemanticAnalyzer extends NodeVisitor {
-    private scope: ScopedSymbolTable;
+    private globalScope: ScopedSymbolTable;
+    private currentScope: ScopedSymbolTable;
 
     constructor() {
         super();
 
-        this.scope = new ScopedSymbolTable('global', 1);
+        this.globalScope = new ScopedSymbolTable('global', 1);
+        this.currentScope = this.globalScope;
     }
 
     visitBlock(node: Block): void {
@@ -58,21 +61,43 @@ export default class SemanticAnalyzer extends NodeVisitor {
 
     visitVarDecl(node: VarDecl) {
         const typeName = node.getTypeNode().getValue() as string;
-        const typeSymbol = this.scope.lookup(typeName) as Symb;
+        const typeSymbol = this.currentScope.lookup(typeName) as Symb;
         const varName = node.getVarNode().getValue() as string;
         const varSymbol = new VarSymbol(varName, typeSymbol);
 
-        if (this.scope.lookup(varName) !== null)
+        if (this.currentScope.lookup(varName) !== null)
             throw new Error(`Duplecate identifier ${varName} found`);
 
-        this.scope.insert(varSymbol);
+        this.currentScope.insert(varSymbol);
     }
 
-    visitProcedureDecl(node: ProcedureDecl) {}
+    visitProcedureDecl(node: ProcedureDecl) {
+        const procName = node.getProcName();
+        const procSymbol = new ProcedureSymbol(procName);
+
+        this.currentScope.insert(procSymbol);
+
+        const procedureScope = new ScopedSymbolTable(procName, 2);
+
+        this.currentScope = procedureScope;
+
+        node.getParams()
+            .forEach(param => {
+                const paramType = this.currentScope.lookup(param.getTypeNode().getValue() as string) as Symb;
+                const paramName = param.getVarNode().getValue() as string;
+                const varSymbol = new VarSymbol(paramName, paramType);
+
+                this.currentScope.insert(varSymbol);
+
+                procSymbol.addParam(varSymbol);
+            });
+
+        this.visit(node.getBlock());
+    }
 
     visitAssign(node: Assign): void {
         const varName = node.getLeft().getValue() as string;
-        const varSymbol = this.scope.lookup(varName);
+        const varSymbol = this.currentScope.lookup(varName);
 
         if (!varSymbol)
             throw new NameError(varName);
@@ -82,7 +107,7 @@ export default class SemanticAnalyzer extends NodeVisitor {
 
     visitVar(node: Var): void {
         const varName = node.getValue() as string;
-        const varSymbol = this.scope.lookup(varName);
+        const varSymbol = this.currentScope.lookup(varName);
 
         if (!varSymbol)
             throw new NameError(varName);

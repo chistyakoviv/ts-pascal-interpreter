@@ -1,8 +1,8 @@
-import Symb from './symbols/symbol.js';
-import BuiltinTypeSymbol from './symbols/builtin_type_symbol.js';
-import VarSymbol from './symbols/var_symbol.js';
-import { TokenType } from './token.js'
-import { TYPE_NAMES } from './ast/type.js';
+import Symb from './symbols/symbol';
+import BuiltinTypeSymbol from './symbols/builtin_type_symbol';
+import VarSymbol from './symbols/var_symbol';
+import { TokenType } from './token'
+import { TYPE_NAMES } from './ast/type';
 
 export default class ScopedSymbolTable {
     private symbols: {[key: string]: Symb} = {};

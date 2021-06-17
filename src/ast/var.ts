@@ -1,6 +1,6 @@
-import AST from './ast.js';
-import Token from '../token.js';
-import { TokenValue } from '../types.js';
+import AST from './ast';
+import Token from '../token';
+import { TokenValue } from '../types';
 
 export default class Var extends AST {
     private token: Token;

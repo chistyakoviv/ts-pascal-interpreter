@@ -1,20 +1,20 @@
-import Token, { TokenType } from './token.js';
-import ParseError from './errors/parse_error.js';
-import Lexer from './lexer.js';
-import AST from './ast/ast.js';
-import BinOp from './ast/binop.js';
-import Num from './ast/num.js';
-import UnaryOp from './ast/unaryop.js';
-import Compound from './ast/compound.js';
-import Assign from './ast/assign.js';
-import Var from './ast/var.js';
-import NoOp from './ast/noop.js';
+import Token, { TokenType } from './token';
+import ParseError from './errors/parse_error';
+import Lexer from './lexer';
+import AST from './ast/ast';
+import BinOp from './ast/binop';
+import Num from './ast/num';
+import UnaryOp from './ast/unaryop';
+import Compound from './ast/compound';
+import Assign from './ast/assign';
+import Var from './ast/var';
+import NoOp from './ast/noop';
 import Program from './ast/program';
-import Block from './ast/block.js';
-import VarDecl from './ast/var_decl.js';
-import Type from './ast/type.js';
-import ProcedureDecl from './ast/procedure_decl.js';
-import Param from './ast/param.js';
+import Block from './ast/block';
+import VarDecl from './ast/var_decl';
+import Type from './ast/type';
+import ProcedureDecl from './ast/procedure_decl';
+import Param from './ast/param';
 
 export default class Parser {
     private lexer: Lexer;
@@ -32,7 +32,7 @@ export default class Parser {
         this.currentToken = this.lexer.getNextToken();
     }
 
-    program(): Program {debugger;
+    program(): Program {
         this.eat(TokenType.PROGRAM);
         const varNode = this.variable();
         const progName = varNode.getValue() as string;

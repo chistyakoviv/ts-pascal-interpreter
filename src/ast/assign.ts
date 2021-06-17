@@ -1,5 +1,5 @@
-import AST from './ast.js';
-import Token from '../token.js';
+import AST from './ast';
+import Token from '../token';
 import Var from './var';
 
 export default class Assign extends AST {

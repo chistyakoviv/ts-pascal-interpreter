@@ -1,6 +1,6 @@
-import AST from './ast.js';
-import Var from './var.js';
-import Type from './type.js';
+import AST from './ast';
+import Var from './var';
+import Type from './type';
 
 export default class Param extends AST {
     private varNode: Var;

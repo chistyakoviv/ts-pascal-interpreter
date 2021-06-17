@@ -1,8 +1,8 @@
-import Interpreter from './interpreter.js';
+import Interpreter from './interpreter';
 import readline from 'readline';
-import Lexer from './lexer.js';
-import Parser from './parser.js';
-import SemanticAnalyzer from './visitors/semantic_analyzer.js';
+import Lexer from './lexer';
+import Parser from './parser';
+import SemanticAnalyzer from './visitors/semantic_analyzer';
 
 const rl = readline.createInterface({
     input: process.stdin,

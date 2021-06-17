@@ -1,5 +1,5 @@
-import AST from './ast.js';
-import Block from './block.js';
+import AST from './ast';
+import Block from './block';
 
 export default class Program extends AST {
     private programName: string;
