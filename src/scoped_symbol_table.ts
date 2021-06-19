@@ -40,7 +40,13 @@ export default class ScopedSymbolTable {
     }
 
     lookup(name: string): Symb | null {
-        return this.symbols[name] ? this.symbols[name] : null;
+        if (this.symbols[name])
+            return this.symbols[name];
+
+        if (this.enclosingScope)
+            return this.enclosingScope.lookup(name);
+
+        return null;
     }
 
     toString(): string {
