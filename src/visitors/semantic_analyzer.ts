@@ -19,6 +19,7 @@ import Type from '../ast/type';
 import NameError from '../errors/name_error';
 import ProcedureDecl from '../ast/procedure_decl';
 import ProcedureSymbol from '../symbols/procedure_symbol';
+import ParseError from '../errors/parse_error';
 
 export default class SemanticAnalyzer extends NodeVisitor {
     private globalScope: ScopedSymbolTable;
@@ -67,7 +68,7 @@ export default class SemanticAnalyzer extends NodeVisitor {
         const varSymbol = new VarSymbol(varName, typeSymbol);
 
         if (this.currentScope?.lookup(varName, true) !== null)
-            throw new Error(`Duplicate identifier ${varName} found`);
+            throw new ParseError(`Duplicate identifier ${varName} found`);
 
         this.currentScope.insert(varSymbol);
     }

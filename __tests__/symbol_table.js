@@ -1,7 +1,8 @@
-const SemanticAnalyzer = require('../dist/cjs/visitors/semantic_analyzer.js').default;
-const Parser = require('../dist/cjs/parser.js').default;
-const Lexer = require('../dist/cjs/lexer.js').default;
-// const NameError = require('../dist/cjs/errors/name_error.js').default;
+const { default: SemanticAnalyzer } = require('../dist/cjs/visitors/semantic_analyzer.js');
+const { default: Parser } = require('../dist/cjs/parser.js');
+const { default: Lexer } = require('../dist/cjs/lexer.js');
+const { default: ParseError } = require('../dist/cjs/errors/parse_error.js');
+const { default: NameError } = require('../dist/cjs/errors/name_error.js');
 
 describe('symbol table', () => {
 
@@ -30,7 +31,7 @@ describe('symbol table', () => {
 
         // act
         // assert
-        expect(runSemanticAnalyzer).toThrow(Error);
+        expect(runSemanticAnalyzer).toThrow(NameError);
         expect(runSemanticAnalyzer).toThrow('Unexpected token b');
     });
 
@@ -50,7 +51,7 @@ describe('symbol table', () => {
 
         // act
         // assert
-        expect(runSemanticAnalyzer).toThrow(Error);
+        expect(runSemanticAnalyzer).toThrow(NameError);
         expect(runSemanticAnalyzer).toThrow('Unexpected token a');
     });
 
@@ -75,7 +76,7 @@ describe('symbol table', () => {
 
         // act
         // assert
-        expect(runSemanticAnalyzer).toThrow(Error);
+        expect(runSemanticAnalyzer).toThrow(ParseError);
         expect(runSemanticAnalyzer).toThrow('Duplicate identifier a found');
     });
 });
