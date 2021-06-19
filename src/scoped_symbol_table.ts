@@ -39,9 +39,12 @@ export default class ScopedSymbolTable {
         this.symbols[symb.getName()] = symb;
     }
 
-    lookup(name: string): Symb | null {
+    lookup(name: string, currentScopeOnly: boolean = false): Symb | null {
         if (this.symbols[name])
             return this.symbols[name];
+
+        if (currentScopeOnly)
+            return null;
 
         if (this.enclosingScope)
             return this.enclosingScope.lookup(name);

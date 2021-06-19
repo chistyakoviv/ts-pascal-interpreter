@@ -53,4 +53,29 @@ describe('symbol table', () => {
         expect(runSemanticAnalyzer).toThrow(Error);
         expect(runSemanticAnalyzer).toThrow('Unexpected token a');
     });
+
+    it(`throws the parsing error 'Duplicate identifier a found'`, () => {
+        // arrange
+        const src = `
+            program Main;
+                var x, y: real;
+
+                procedure Alpha(a : integer);
+                    var y : integer;
+                    var a : real;  { ERROR here! }
+                begin
+                    x := a + x + y;
+                end;
+
+            begin { Main }
+
+            end.  { Main }
+        `;
+        const runSemanticAnalyzer = createSemanticAnalyzer(src);
+
+        // act
+        // assert
+        expect(runSemanticAnalyzer).toThrow(Error);
+        expect(runSemanticAnalyzer).toThrow('Duplicate identifier a found');
+    });
 });

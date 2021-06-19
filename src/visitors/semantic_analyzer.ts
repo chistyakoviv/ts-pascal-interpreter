@@ -66,8 +66,8 @@ export default class SemanticAnalyzer extends NodeVisitor {
         const varName = node.getVarNode().getValue() as string;
         const varSymbol = new VarSymbol(varName, typeSymbol);
 
-        if (this.currentScope?.lookup(varName) !== null)
-            throw new Error(`Duplecate identifier ${varName} found`);
+        if (this.currentScope?.lookup(varName, true) !== null)
+            throw new Error(`Duplicate identifier ${varName} found`);
 
         this.currentScope.insert(varSymbol);
     }
