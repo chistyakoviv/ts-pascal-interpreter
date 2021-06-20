@@ -20,6 +20,8 @@ import NameError from '../errors/name_error';
 import ProcedureDecl from '../ast/procedure_decl';
 import ProcedureSymbol from '../symbols/procedure_symbol';
 import ParseError from '../errors/parse_error';
+import SemanticError from '../errors/semantic_error';
+import { ErrorCode } from '../errors/base_error';
 
 export default class SemanticAnalyzer extends NodeVisitor {
     private globalScope: ScopedSymbolTable;
@@ -68,7 +70,7 @@ export default class SemanticAnalyzer extends NodeVisitor {
         const varSymbol = new VarSymbol(varName, typeSymbol);
 
         if (this.currentScope?.lookup(varName, true) !== null)
-            throw new ParseError(`Duplicate identifier ${varName} found`);
+            throw new SemanticError(ErrorCode.DUPLICATE_ID, node.getVarNode().getToken(), `${ErrorCode.DUPLICATE_ID} -> ${node.getVarNode().getToken()}`);
 
         this.currentScope.insert(varSymbol);
     }
@@ -111,7 +113,7 @@ export default class SemanticAnalyzer extends NodeVisitor {
         const varName = node.getValue() as string;
         const varSymbol = this.currentScope?.lookup(varName);
 
-        if (!varSymbol)
-            throw new NameError(varName);
+        if (varSymbol === null)
+            throw new SemanticError(ErrorCode.ID_NOT_FOUND, node.getToken(), `${ErrorCode.ID_NOT_FOUND} -> ${node.getToken()}`);
     }
 }

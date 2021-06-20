@@ -62,7 +62,7 @@ export default class Interpreter extends NodeVisitor {
                 return this.visit(node.getLeft()) / this.visit(node.getRight());
         }
 
-        throw new ParseError();
+        throw new Error(`The operation type ${node.getOp().getType()} is not supported`);
     }
 
     visitNum(node: Num): number {
@@ -77,7 +77,7 @@ export default class Interpreter extends NodeVisitor {
                 return -this.visit(node.getNode());
         }
 
-        throw new ParseError();
+        throw new Error(`The operation type ${node.getOp().getType()} is not supported`);
     }
 
     visitCompound(node: Compound): void {

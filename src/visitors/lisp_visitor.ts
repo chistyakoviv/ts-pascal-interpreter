@@ -4,6 +4,7 @@ import Num from '../ast/num.js';
 import BinOp from '../ast/binop.js';
 import { TokenType } from '../token.js';
 import ParseError from '../errors/parse_error.js'
+import { ErrorCode } from '../errors/base_error.js';
 
 export default class LispVisitor extends NodeVisitor {
     private parser: Parser;
@@ -30,7 +31,7 @@ export default class LispVisitor extends NodeVisitor {
                 return `(/ ${this.visit(node.getLeft())} ${this.visit(node.getRight())})`;
         }
 
-        throw new ParseError();
+        throw new Error(`The operation ${node.getOp().getType()} is not supported`);
     }
 
     interpret(): string {

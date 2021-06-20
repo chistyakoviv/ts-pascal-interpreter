@@ -15,6 +15,7 @@ import VarDecl from './ast/var_decl';
 import Type from './ast/type';
 import ProcedureDecl from './ast/procedure_decl';
 import Param from './ast/param';
+import { ErrorCode } from './errors/base_error';
 
 export default class Parser {
     private lexer: Lexer;
@@ -27,7 +28,7 @@ export default class Parser {
 
     eat(tokenType: TokenType): void {
         if (!(this.currentToken.getType() & tokenType))
-            throw new ParseError();
+            throw new ParseError(ErrorCode.UNEXPECTED_TOKEN, this.currentToken, `expected: ${tokenType}; ${ErrorCode.UNEXPECTED_TOKEN} -> ${this.currentToken}`);
 
         this.currentToken = this.lexer.getNextToken();
     }
@@ -52,40 +53,43 @@ export default class Parser {
     declarations(): (AST[] | AST)[] {
         const declarations = [];
 
-        while (true) {
-            if (this.currentToken.getType() === TokenType.VAR) {
-                this.eat(TokenType.VAR);
+        while (this.currentToken.getType() === TokenType.VAR) {
+            this.eat(TokenType.VAR);
 
-                while (this.currentToken.getType() === TokenType.ID) {
-                    const varDecl: VarDecl[] = this.variableDeclaration();
-                    declarations.push(varDecl);
-                    this.eat(TokenType.SEMI);
-                }
-            } else if (this.currentToken.getType() === TokenType.PROCEDURE) {
-                this.eat(TokenType.PROCEDURE);
-                const procName = this.currentToken.getValue() as string;
-                this.eat(TokenType.ID);
-
-                let params: Param[] = [];
-
-                if (this.currentToken.getType() === TokenType.LPAREN) {
-                    this.eat(TokenType.LPAREN);
-                    params = this.formalParameterList();
-                    this.eat(TokenType.RPAREN);
-                }
-
+            while (this.currentToken.getType() === TokenType.ID) {
+                const varDecl: VarDecl[] = this.variableDeclaration();
+                declarations.push(varDecl);
                 this.eat(TokenType.SEMI);
-                const blockNode = this.block();
-                const procDecl = new ProcedureDecl(procName, params, blockNode);
-                declarations.push(procDecl);
-                this.eat(TokenType.SEMI);
-                break;
-            } else {
-                break;
             }
         }
 
+        while (this.currentToken.getType() === TokenType.PROCEDURE) {
+            const procDecl = this.procedureDeclaration();
+            declarations.push(procDecl);
+        }
+
         return declarations;
+    }
+
+    procedureDeclaration(): ProcedureDecl {
+        this.eat(TokenType.PROCEDURE);
+        const procName = this.currentToken.getValue() as string;
+        this.eat(TokenType.ID);
+
+        let params: Param[] = [];
+
+        if (this.currentToken.getType() === TokenType.LPAREN) {
+            this.eat(TokenType.LPAREN);
+            params = this.formalParameterList();
+            this.eat(TokenType.RPAREN);
+        }
+
+        this.eat(TokenType.SEMI);
+        const blockNode = this.block();
+        const procDecl = new ProcedureDecl(procName, params, blockNode);
+        this.eat(TokenType.SEMI);
+
+        return procDecl;
     }
 
     variableDeclaration(): VarDecl[] {
@@ -174,7 +178,7 @@ export default class Parser {
         }
 
         if (this.currentToken.getType() === TokenType.ID)
-            throw new ParseError();
+            throw new ParseError(ErrorCode.UNEXPECTED_TOKEN, this.currentToken, `${ErrorCode.UNEXPECTED_TOKEN} -> ${this.currentToken}`);
 
         return result;
     }
@@ -287,7 +291,7 @@ export default class Parser {
         const node = this.program();
 
         if (this.currentToken.getType() !== TokenType.EOF)
-            throw new ParseError();
+            throw new ParseError(ErrorCode.UNEXPECTED_TOKEN, this.currentToken, `${ErrorCode.UNEXPECTED_TOKEN} -> ${this.currentToken}`);
 
         return node;
     }

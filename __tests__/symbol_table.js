@@ -3,6 +3,7 @@ const { default: Parser } = require('../dist/cjs/parser');
 const { default: Lexer } = require('../dist/cjs/lexer');
 const { default: ParseError } = require('../dist/cjs/errors/parse_error');
 const { default: NameError } = require('../dist/cjs/errors/name_error');
+const { default: SemanticError } = require('../dist/cjs/errors/semantic_error');
 
 describe('symbol table', () => {
 
@@ -31,8 +32,8 @@ describe('symbol table', () => {
 
         // act
         // assert
-        expect(runSemanticAnalyzer).toThrow(NameError);
-        expect(runSemanticAnalyzer).toThrow('Unexpected token b');
+        expect(runSemanticAnalyzer).toThrow(SemanticError);
+        expect(runSemanticAnalyzer).toThrow('SemanticError: Identifier not found -> Token(128, b, position=7:26');
     });
 
     it(`throws the parsing error 'Unexpected token a' when assigning an expression to a`, () => {
@@ -55,7 +56,7 @@ describe('symbol table', () => {
         expect(runSemanticAnalyzer).toThrow('Unexpected token a');
     });
 
-    it(`throws the parsing error 'Duplicate identifier a found'`, () => {
+    it(`throws the parsing error 'SemanticError: Duplicate id found -> Token(128, a, position=7:26)'`, () => {
         // arrange
         const src = `
             program Main;
@@ -76,7 +77,7 @@ describe('symbol table', () => {
 
         // act
         // assert
-        expect(runSemanticAnalyzer).toThrow(ParseError);
-        expect(runSemanticAnalyzer).toThrow('Duplicate identifier a found');
+        expect(runSemanticAnalyzer).toThrow(SemanticError);
+        expect(runSemanticAnalyzer).toThrow('SemanticError: Duplicate id found -> Token(128, a, position=7:26)');
     });
 });

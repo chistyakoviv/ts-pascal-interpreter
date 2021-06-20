@@ -62,6 +62,14 @@ export default class Token {
         return this.value;
     }
 
+    getLineno(): number {
+        return this.lineno;
+    }
+
+    getColumn(): number {
+        return this.column;
+    }
+
     toString(): string {
         return `Token(${this.type}, ${this.value}, position=${this.lineno}:${this.column})`;
     }

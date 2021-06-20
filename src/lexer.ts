@@ -79,10 +79,10 @@ export default class Lexer {
                 this.advance();
             }
 
-            return new Token(TokenType.REAL_CONST, Number(result));
+            return new Token(TokenType.REAL_CONST, Number(result), this.lineno, this.column);
         }
 
-        return new Token(TokenType.INTEGER_CONST, Number(result));
+        return new Token(TokenType.INTEGER_CONST, Number(result), this.lineno, this.column);
     }
 
     id(): Token {
@@ -96,7 +96,7 @@ export default class Lexer {
         if (RESERVED_KEYWORDS[result.toUpperCase()])
             return RESERVED_KEYWORDS[result.toUpperCase()];
 
-        return new Token(TokenType.ID, result);
+        return new Token(TokenType.ID, result, this.lineno, this.column);
     }
 
     getNextToken(): Token {
@@ -121,19 +121,19 @@ export default class Lexer {
             if (this.currentChar === ':' && this.peek() === '=') {
                 this.advance();
                 this.advance();
-                return new Token(TokenType.ASSIGN, ':=');
+                return new Token(TokenType.ASSIGN, ':=', this.lineno, this.column);
             }
 
             const char = this.currentChar;
 
             if (TokenMap[char] !== undefined) {
                 this.advance();
-                return new Token(TokenMap[char], char);
+                return new Token(TokenMap[char], char, this.lineno, this.column);
             }
 
             throw new LexerError(`Lexer error on '${this.currentChar}' line: ${this.lineno} column: ${this.column}`);
         }
 
-        return new Token(TokenType.EOF, null);
+        return new Token(TokenType.EOF, null, this.lineno, this.column);
     }
 }
