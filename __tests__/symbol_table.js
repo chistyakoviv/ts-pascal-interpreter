@@ -1,8 +1,8 @@
-const { default: SemanticAnalyzer } = require('../dist/cjs/visitors/semantic_analyzer.js');
-const { default: Parser } = require('../dist/cjs/parser.js');
-const { default: Lexer } = require('../dist/cjs/lexer.js');
-const { default: ParseError } = require('../dist/cjs/errors/parse_error.js');
-const { default: NameError } = require('../dist/cjs/errors/name_error.js');
+const { default: SemanticAnalyzer } = require('../dist/cjs/visitors/semantic_analyzer');
+const { default: Parser } = require('../dist/cjs/parser');
+const { default: Lexer } = require('../dist/cjs/lexer');
+const { default: ParseError } = require('../dist/cjs/errors/parse_error');
+const { default: NameError } = require('../dist/cjs/errors/name_error');
 
 describe('symbol table', () => {
 

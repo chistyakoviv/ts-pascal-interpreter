@@ -1,7 +1,7 @@
-import Token, { TokenType } from './token';
+import Token, { TokenMap, TokenType } from './token';
 import { isNumber, isSpace, isDot, isAlNum, isAlpha } from './utils';
 import { CharType } from './types';
-import ParseError from './errors/parse_error';
+import LexerError from './errors/lexer_error';
 
 const RESERVED_KEYWORDS: {[key: string]: Token} = {
     'PROGRAM': new Token(TokenType.PROGRAM, 'PROGRAM'),
@@ -16,22 +16,30 @@ const RESERVED_KEYWORDS: {[key: string]: Token} = {
 
 export default class Lexer {
     private text: string;
-    private pos: number;
+    private pos: number = 0;
     private currentChar: CharType;
+    private lineno: number = 1;
+    private column: number = 1;
 
     constructor(text: string) {
         this.text = text;
-        this.pos = 0;
         this.currentChar = this.text[this.pos];
     }
 
     advance(): void {
         this.pos++;
 
-        if (this.pos > this.text.length - 1)
+        if (this.currentChar == '\n') {
+            this.lineno++;
+            this.column = 0;
+        }
+
+        if (this.pos > this.text.length - 1) {
             this.currentChar = null;
-        else
+        } else {
             this.currentChar = this.text[this.pos];
+            this.column++;
+        }
     }
 
     peek(): string | null {
@@ -104,69 +112,26 @@ export default class Lexer {
             if (isNumber(this.currentChar))
                 return this.number();
 
-            if (this.currentChar === ':' && this.peek() === '=') {
-                this.advance();
-                this.advance();
-                return new Token(TokenType.ASSIGN, ':=');
-            }
-
             if (this.currentChar === '{') {
                 this.advance();
                 this.skipComment();
                 continue;
             }
 
-            if (this.currentChar === ':') {
+            if (this.currentChar === ':' && this.peek() === '=') {
                 this.advance();
-                return new Token(TokenType.COLON, ':');
+                this.advance();
+                return new Token(TokenType.ASSIGN, ':=');
             }
 
-            if (this.currentChar === ',') {
+            const char = this.currentChar;
+
+            if (TokenMap[char] !== undefined) {
                 this.advance();
-                return new Token(TokenType.COMMA, ',');
+                return new Token(TokenMap[char], char);
             }
 
-            if (this.currentChar === '/') {
-                this.advance();
-                return new Token(TokenType.FLOAT_DIV, '/');
-            }
-
-            if (this.currentChar === ';') {
-                this.advance();
-                return new Token(TokenType.SEMI, ';');
-            }
-
-            if (this.currentChar === '+') {
-                this.advance();
-                return new Token(TokenType.PLUS, '+');
-            }
-
-            if (this.currentChar === '-') {
-                this.advance();
-                return new Token(TokenType.MINUS, '-');
-            }
-
-            if (this.currentChar === '*') {
-                this.advance();
-                return new Token(TokenType.MULT, '*');
-            }
-
-            if (this.currentChar === '(') {
-                this.advance();
-                return new Token(TokenType.LPAREN, '(');
-            }
-
-            if (this.currentChar === ')') {
-                this.advance();
-                return new Token(TokenType.RPAREN, ')');
-            }
-
-            if (this.currentChar === '.') {
-                this.advance();
-                return new Token(TokenType.DOT, '.');
-            }
-
-            throw new ParseError();
+            throw new LexerError(`Lexer error on '${this.currentChar}' line: ${this.lineno} column: ${this.column}`);
         }
 
         return new Token(TokenType.EOF, null);

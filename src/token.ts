@@ -28,13 +28,30 @@ export enum TokenType {
     PROCEDURE       = bit(23),
 }
 
+export const TokenMap: {[key: string]: TokenType} = {
+    '+': TokenType.PLUS,
+    '-': TokenType.MINUS,
+    '*': TokenType.MULT,
+    '(': TokenType.LPAREN,
+    ')': TokenType.RPAREN,
+    ';': TokenType.SEMI,
+    '.': TokenType.DOT,
+    ':': TokenType.COLON,
+    ',': TokenType.COMMA,
+    '/': TokenType.FLOAT_DIV,
+}
+
 export default class Token {
     private type: TokenType;
     private value: TokenValue;
+    private lineno: number;
+    private column: number;
 
-    constructor(type: TokenType, value: TokenValue) {
+    constructor(type: TokenType, value: TokenValue, lineno: number = 0, column: number = 0) {
         this.type = type;
         this.value = value;
+        this.lineno = lineno;
+        this.column = column;
     }
 
     getType(): TokenType {
@@ -46,6 +63,6 @@ export default class Token {
     }
 
     toString(): string {
-        return `Token(${this.type}, ${this.value})`;
+        return `Token(${this.type}, ${this.value}, position=${this.lineno}:${this.column})`;
     }
 }

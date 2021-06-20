@@ -1,5 +1,5 @@
-const { default: Lexer } = require('../dist/cjs/lexer.js');
-const { TokenType, default: Token } = require('../dist/cjs/token.js');
+const { default: Lexer } = require('../dist/cjs/lexer');
+const { TokenType, default: Token } = require('../dist/cjs/token');
 
 describe('lexer', () => {
 

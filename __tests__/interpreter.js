@@ -1,6 +1,6 @@
-const Interpreter = require('../dist/cjs/interpreter.js').default;
-const Parser = require('../dist/cjs/parser.js').default;
-const Lexer = require('../dist/cjs/lexer.js').default;
+const { default: Interpreter } = require('../dist/cjs/interpreter');
+const { default: Parser } = require('../dist/cjs/parser');
+const { default: Lexer } = require('../dist/cjs/lexer');
 
 describe('interpreter', () => {
 
