@@ -16,6 +16,7 @@ import Block from './ast/block';
 import VarDecl from './ast/var_decl';
 import Type from './ast/type';
 import ProcedureDecl from './ast/procedure_decl';
+import ProcedureCall from './ast/procedure_call';
 
 export default class Interpreter extends NodeVisitor {
     private parser: Parser;
@@ -42,11 +43,13 @@ export default class Interpreter extends NodeVisitor {
         this.visit(node.getCompoundStatement());
     }
 
-    visitVarDecl(node: VarDecl) {}
+    visitVarDecl(node: VarDecl): void {}
 
     visitProcedureDecl(node: ProcedureDecl) {}
 
-    visitType(node: Type) {}
+    visitProcedureCall(node: ProcedureCall): void {}
+
+    visitType(node: Type): void {}
 
     visitBinOp(node: BinOp): number {
         switch (node.getOp().getType()) {

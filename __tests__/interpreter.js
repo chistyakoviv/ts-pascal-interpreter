@@ -89,4 +89,30 @@ describe('interpreter', () => {
         // assert
         expect(table).toStrictEqual({'a': 2, 'b': 25, 'y': 5.997142857142857});
     });
+
+    it(`tests parsing a procedure call`, () => {
+        // arrange
+        const src = `
+            program Main;
+
+            procedure Alpha(a : integer; b : integer);
+            var x : integer;
+            begin
+                x := (a + b ) * 2;
+            end;
+
+            begin { Main }
+
+                Alpha(3 + 5, 7);  { procedure call }
+
+            end.  { Main }
+        `;
+        const interpreter = createInterpreter(src);
+
+        // act
+        const result = interpreter.interpret();
+
+        // assert
+        expect(true).toBe(true);
+    });
 });

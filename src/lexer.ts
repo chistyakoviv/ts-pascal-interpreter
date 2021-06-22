@@ -99,6 +99,10 @@ export default class Lexer {
         return new Token(TokenType.ID, result, this.lineno, this.column);
     }
 
+    getCurrentChar(): CharType {
+        return this.currentChar;
+    }
+
     getNextToken(): Token {
         while (this.currentChar !== null) {
             if (isSpace(this.currentChar)) {

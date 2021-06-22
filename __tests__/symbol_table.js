@@ -80,4 +80,54 @@ describe('symbol table', () => {
         expect(runSemanticAnalyzer).toThrow(SemanticError);
         expect(runSemanticAnalyzer).toThrow('SemanticError: Duplicate id found -> Token(128, a, position=7:26)');
     });
+
+    it(`tests parsing a procedure call with a large number of actual parameters`, () => {
+        // arrange
+        const src = `
+            program Main;
+
+            procedure Alpha(a : integer; b : integer);
+            var x : integer;
+            begin
+                x := (a + b ) * 2;
+            end;
+
+            begin { Main }
+
+                Alpha(5, 7, 8);  { procedure call }
+
+            end.  { Main }
+        `;
+        const runSemanticAnalyzer = createSemanticAnalyzer(src);
+
+        // act
+        // assert
+        expect(runSemanticAnalyzer).toThrow(Error);
+        expect(runSemanticAnalyzer).toThrow('The number of formal and actual parameters doesn\'t match');
+    });
+
+    it(`tests parsing a procedure call with fewer actual parameters`, () => {
+        // arrange
+        const src = `
+            program Main;
+
+            procedure Alpha(a : integer; b : integer);
+            var x : integer;
+            begin
+                x := (a + b ) * 2;
+            end;
+
+            begin { Main }
+
+                Alpha();  { procedure call }
+
+            end.  { Main }
+        `;
+        const runSemanticAnalyzer = createSemanticAnalyzer(src);
+
+        // act
+        // assert
+        expect(runSemanticAnalyzer).toThrow(Error);
+        expect(runSemanticAnalyzer).toThrow('The number of formal and actual parameters doesn\'t match');
+    });
 });

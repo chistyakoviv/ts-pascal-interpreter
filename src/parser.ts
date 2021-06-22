@@ -15,6 +15,7 @@ import VarDecl from './ast/var_decl';
 import Type from './ast/type';
 import ProcedureDecl from './ast/procedure_decl';
 import Param from './ast/param';
+import ProcedureCall from './ast/procedure_call';
 import { ErrorCode } from './errors/base_error';
 
 export default class Parser {
@@ -90,6 +91,31 @@ export default class Parser {
         this.eat(TokenType.SEMI);
 
         return procDecl;
+    }
+
+    procCallStatement(): ProcedureCall {
+        const token = this.currentToken;
+        const procName: string = this.currentToken.getValue() as string;
+
+        this.eat(TokenType.ID);
+        this.eat(TokenType.LPAREN);
+
+        const actualParams: AST[] = [];
+
+        if (this.currentToken.getType() !== TokenType.RPAREN) {
+            const node = this.expr();
+            actualParams.push(node);
+        }
+
+        while (this.currentToken.getType() === TokenType.COMMA) {
+            this.eat(TokenType.COMMA);
+            const node = this.expr();
+            actualParams.push(node);
+        }
+
+        this.eat(TokenType.RPAREN);
+
+        return new ProcedureCall(procName, actualParams, token);
     }
 
     variableDeclaration(): VarDecl[] {
@@ -191,7 +217,7 @@ export default class Parser {
                 node = this.compoundStatement();
                 break;
             case TokenType.ID:
-                node = this.assignmentStatement();
+                node = this.lexer.getCurrentChar() === '(' ? this.procCallStatement() : this.assignmentStatement();
                 break;
             default:
                 node = this.empty();

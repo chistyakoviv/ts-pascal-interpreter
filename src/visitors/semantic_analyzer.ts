@@ -18,6 +18,7 @@ import VarDecl from '../ast/var_decl';
 import Type from '../ast/type';
 import NameError from '../errors/name_error';
 import ProcedureDecl from '../ast/procedure_decl';
+import ProcedureCall from '../ast/procedure_call';
 import ProcedureSymbol from '../symbols/procedure_symbol';
 import ParseError from '../errors/parse_error';
 import SemanticError from '../errors/semantic_error';
@@ -63,7 +64,7 @@ export default class SemanticAnalyzer extends NodeVisitor {
 
     visitNoOp(node: NoOp): void {}
 
-    visitVarDecl(node: VarDecl) {
+    visitVarDecl(node: VarDecl): void {
         const typeName = node.getTypeNode().getValue() as string;
         const typeSymbol = this.currentScope?.lookup(typeName) as Symb;
         const varName = node.getVarNode().getValue() as string;
@@ -75,7 +76,22 @@ export default class SemanticAnalyzer extends NodeVisitor {
         this.currentScope.insert(varSymbol);
     }
 
-    visitProcedureDecl(node: ProcedureDecl) {
+    visitProcedureCall(node: ProcedureCall): void {
+        const proc = this.currentScope?.lookup(node.getProcName());
+
+        if (!proc)
+            throw new Error('No such precure');
+
+        const paramsCount = (proc as ProcedureSymbol).getParams().length;
+
+        if (paramsCount !== node.getActualParams().length)
+            throw new Error('The number of formal and actual parameters doesn\'t match');
+
+        node.getActualParams()
+            .forEach(param => this.visit(param));
+    }
+
+    visitProcedureDecl(node: ProcedureDecl): void {
         const procName = node.getProcName();
         const procSymbol = new ProcedureSymbol(procName);
 
