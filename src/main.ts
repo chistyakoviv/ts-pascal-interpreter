@@ -30,7 +30,7 @@ rl.question('>>> ', (text: string) => {
     const interpreter = new Interpreter(parser);
     const result: any = interpreter.interpret();
 
-    console.log(interpreter.getGlobalScope());
+    console.log(interpreter.getCallStack());
 
     rl.close();
 });

@@ -17,23 +17,30 @@ import VarDecl from './ast/var_decl';
 import Type from './ast/type';
 import ProcedureDecl from './ast/procedure_decl';
 import ProcedureCall from './ast/procedure_call';
+import CallStack from './containers/call_stack';
+import ActivationRecord, { ARType } from './containers/activation_record';
 
 export default class Interpreter extends NodeVisitor {
     private parser: Parser;
-    private globalScope: {[key: string]: number} = {};
+    private callStack: CallStack<ActivationRecord>;
 
     constructor(parser: Parser) {
         super();
 
         this.parser = parser;
+        this.callStack = new CallStack<ActivationRecord>();
     }
 
-    getGlobalScope(): {[key: string]: number} {
-        return this.globalScope;
+    getCallStack(): CallStack<ActivationRecord> {
+        return this.callStack;
     }
 
     visitProgram(node: Program): void {
+        const progName = node.getName();
+
+        this.callStack.push(new ActivationRecord(progName, ARType.PROGRAM, 1));
         this.visit(node.getBlock());
+        this.callStack.pop();
     }
 
     visitBlock(node: Block): void {
@@ -88,17 +95,22 @@ export default class Interpreter extends NodeVisitor {
     }
 
     visitAssign(node: Assign): void {
-        this.globalScope[node.getLeft().getValue() as string] = this.visit(node.getRight());
+        const varName = node.getLeft().getValue() as string;
+        const varValue = this.visit(node.getRight());
+        const activationRecord = this.callStack.peek();
+
+        activationRecord?.set(varName, varValue);
     }
 
     visitVar(node: Var): number {
         const varName = node.getValue() as string;
-        const val = this.globalScope[varName];
+        const activationRecord = this.callStack.peek();
+        const varValue = activationRecord?.get(varName);
 
-        if (!val)
-            throw new NameError(varName as string);
+        if (varValue === undefined)
+            throw new NameError(varName);
 
-        return val;
+        return varValue;
     }
 
     visitNoOp(node: NoOp): void {}
