@@ -1,5 +1,6 @@
 export enum ARType {
     PROGRAM = 'PROGRAM',
+    PROCEDURE = 'PROCEDURE',
 }
 
 export default class ActivationRecord {

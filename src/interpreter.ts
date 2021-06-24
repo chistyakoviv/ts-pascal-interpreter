@@ -19,15 +19,17 @@ import ProcedureDecl from './ast/procedure_decl';
 import ProcedureCall from './ast/procedure_call';
 import CallStack from './containers/call_stack';
 import ActivationRecord, { ARType } from './containers/activation_record';
+import ProcedureSymbol from './symbols/procedure_symbol';
+import AST from './ast/ast';
 
 export default class Interpreter extends NodeVisitor {
-    private parser: Parser;
+    private tree: AST;
     private callStack: CallStack<ActivationRecord>;
 
-    constructor(parser: Parser) {
+    constructor(tree: AST) {
         super();
 
-        this.parser = parser;
+        this.tree = tree;
         this.callStack = new CallStack<ActivationRecord>();
     }
 
@@ -52,9 +54,20 @@ export default class Interpreter extends NodeVisitor {
 
     visitVarDecl(node: VarDecl): void {}
 
-    visitProcedureDecl(node: ProcedureDecl) {}
+    visitProcedureDecl(node: ProcedureDecl): void {}
 
-    visitProcedureCall(node: ProcedureCall): void {}
+    visitProcedureCall(node: ProcedureCall): void {
+        const ar = new ActivationRecord(node.getProcName(), ARType.PROCEDURE, 2);
+        const procSymbol = node.getProcSymbol() as ProcedureSymbol;
+        const formalParams = procSymbol.getParams();
+        const actualParams = node.getActualParams();
+
+        formalParams.forEach((param, idx) => ar.set(param.getName(), this.visit(actualParams[idx])));
+
+        this.callStack.push(ar);
+        this.visit(procSymbol.getBlock() as Block);
+        this.callStack.pop();
+    }
 
     visitType(node: Type): void {}
 
@@ -116,7 +129,6 @@ export default class Interpreter extends NodeVisitor {
     visitNoOp(node: NoOp): void {}
 
     interpret(): TokenValue {
-        const tree = this.parser.parse();
-        return this.visit(tree);
+        return this.visit(this.tree);
     }
 }

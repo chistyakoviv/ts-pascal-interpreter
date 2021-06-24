@@ -25,14 +25,12 @@ import SemanticError from '../errors/semantic_error';
 import { ErrorCode } from '../errors/base_error';
 
 export default class SemanticAnalyzer extends NodeVisitor {
-    private globalScope: ScopedSymbolTable;
     private currentScope: ScopedSymbolTable | undefined;
 
     constructor() {
         super();
 
-        this.globalScope = new ScopedSymbolTable('global', 1);
-        this.currentScope = this.globalScope;
+        this.currentScope = new ScopedSymbolTable('global', 1);
     }
 
     visitBlock(node: Block): void {
@@ -77,15 +75,17 @@ export default class SemanticAnalyzer extends NodeVisitor {
     }
 
     visitProcedureCall(node: ProcedureCall): void {
-        const proc = this.currentScope?.lookup(node.getProcName());
+        const procSymb = this.currentScope?.lookup(node.getProcName()) as ProcedureSymbol;
 
-        if (!proc)
-            throw new Error('No such precure');
+        if (!procSymb)
+            throw new Error('No such procedure');
 
-        const paramsCount = (proc as ProcedureSymbol).getParams().length;
+        const paramsCount = procSymb.getParams().length;
 
         if (paramsCount !== node.getActualParams().length)
             throw new Error('The number of formal and actual parameters doesn\'t match');
+
+        node.setProcSymbol(procSymb);
 
         node.getActualParams()
             .forEach(param => this.visit(param));
@@ -113,6 +113,8 @@ export default class SemanticAnalyzer extends NodeVisitor {
 
         this.visit(node.getBlock());
         this.currentScope = this.currentScope.getEnclosingScope();
+
+        procSymbol.setBlock(node.getBlock());
     }
 
     visitAssign(node: Assign): void {

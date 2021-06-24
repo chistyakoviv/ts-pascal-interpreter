@@ -26,8 +26,10 @@ rl.question('>>> ', (text: string) => {
 
     const lexer = new Lexer(test);
     const parser = new Parser(lexer);
-    // const semanticAnalyzer = new SemanticAnalyzer();
-    const interpreter = new Interpreter(parser);
+    const semanticAnalyzer = new SemanticAnalyzer();
+    const tree = parser.parse();
+    semanticAnalyzer.visit(tree);
+    const interpreter = new Interpreter(tree);
     const result: any = interpreter.interpret();
 
     console.log(interpreter.getCallStack());

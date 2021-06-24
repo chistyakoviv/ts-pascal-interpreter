@@ -1,13 +1,17 @@
 const { default: Interpreter } = require('../dist/cjs/interpreter');
 const { default: Parser } = require('../dist/cjs/parser');
 const { default: Lexer } = require('../dist/cjs/lexer');
+const { default: SemanticAnalyzer } = require('../dist/cjs/visitors/semantic_analyzer');
 
 describe('interpreter', () => {
 
     const createInterpreter = (text) => {
         const lexer = new Lexer(text);
         const parser = new Parser(lexer);
-        const interpreter = new Interpreter(parser);
+        const semanticAnalyzer = new SemanticAnalyzer();
+        const tree = parser.parse();
+        semanticAnalyzer.visit(tree);
+        const interpreter = new Interpreter(tree);
 
         return interpreter;
     };
@@ -91,6 +95,32 @@ describe('interpreter', () => {
     // });
 
     it(`tests parsing a procedure call`, () => {
+        // arrange
+        const src = `
+            program Main;
+
+            procedure Alpha(a : integer; b : integer);
+            var x : integer;
+            begin
+                x := (a + b ) * 2;
+            end;
+
+            begin { Main }
+
+                Alpha(3 + 5, 7);  { procedure call }
+
+            end.  { Main }
+        `;
+        const interpreter = createInterpreter(src);
+
+        // act
+        const result = interpreter.interpret();
+
+        // assert
+        expect(true).toBe(true);
+    });
+
+    it(`tests a procedure call`, () => {
         // arrange
         const src = `
             program Main;
