@@ -57,8 +57,8 @@ export default class Interpreter extends NodeVisitor {
     visitProcedureDecl(node: ProcedureDecl): void {}
 
     visitProcedureCall(node: ProcedureCall): void {
-        const ar = new ActivationRecord(node.getProcName(), ARType.PROCEDURE, 2);
         const procSymbol = node.getProcSymbol() as ProcedureSymbol;
+        const ar = new ActivationRecord(node.getProcName(), ARType.PROCEDURE, procSymbol.getScopeLevel() + 1);
         const formalParams = procSymbol.getParams();
         const actualParams = node.getActualParams();
 

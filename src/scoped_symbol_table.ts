@@ -36,6 +36,7 @@ export default class ScopedSymbolTable {
     }
 
     insert(symb: Symb): void {
+        symb.setScopeLevel(this.scopeLevel);
         this.symbols[symb.getName()] = symb;
     }
 
